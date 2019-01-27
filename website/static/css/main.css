@@ -1,0 +1,94 @@
+.table {
+    font-size: medium;
+}
+
+.table > tbody > tr > td {
+    vertical-align: middle;
+}
+
+.library > tbody > tr > td > a {
+    display: inline-block;
+    margin: 0 5px;
+}
+
+.page-title {
+    font-size: 1.8em;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.no-panel-body {
+    font-size: 1.6em;
+    color: #BDBDBD;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.croppy {
+    object-fit: cover;
+    object-position: center;
+    height: 213px;
+    width: 160px;
+    border-radius: 4px;
+}
+
+.trombi-box {
+    display: inline-block;
+    margin: 20px 20px 0px 0px;
+    position: relative;
+}
+
+.wrapper {
+    background-color: rgba(0, 0, 0, 0.60);
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+    padding: 10px 0px 10px 0px;
+    border-radius: 0px 0px 4px 4px;
+    color: #fff;
+}
+
+.protect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: -moz-none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.scroll-table {
+    overflow: auto;
+    max-height: 300px;
+}
+
+.container-fluid {
+    max-width: 84em;
+}
+
+.checkbox {
+    margin-top: 0;
+    margin-bottom: 24px;
+}
+
+.checkbox label {
+    font-weight: bold;
+}
+
+.well {
+    margin-bottom: 0 !important;
+}
+
+.btn-static {
+  background-color: #eee;
+  border: 1px solid darkgrey;
+  cursor: default;
+}
+
+.btn-static:active {
+  -moz-box-shadow:    inset 0 0 0px white;
+  -webkit-box-shadow: inset 0 0 0px white;
+  box-shadow:         inset 0 0 0px white;
+}

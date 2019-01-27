@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>BackToBasics</title>
+
+    <link href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.6/summernote.css" rel="stylesheet">
+    <link href="{% static 'css/breadcrump.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'css/sidebar.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'css/theme.css' %}" rel="stylesheet" type="text/css"/>
+    {% block css %}
+    {% endblock %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    {% block javascript %}
+    {% endblock %}
+
+    <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.png' %}"/>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="text-center header-logo">
+            <a href="{% url 'users:home' %}">
+                <span class="backtobasics-logo"></span>
+            </a>
+        </div>
+        <a href="{% url 'users:home' %}">
+            <img src="https://cdn.discordapp.com/avatars/{{ user_extra.id }}/{{ user_extra.avatar }}"
+                 class="img-responsive img-rounded center-block" width="150">
+        </a>
+        <br>
+        <ul class="list">
+            <li><a href="https://www.twitch.tv/backtobasicsepita"><i style="width: 30px;" class="fab fa-twitch"></i>YO</a></li>
+            <li><a href="{% url 'logout' %}"><i style="width: 30px;" class="fa fa-sign-out-alt"></i>Logout</a></li>
+        </ul>
+    </div>
+    <div class="side">
+        <div class="container-fluid">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+</body>
+</html>
