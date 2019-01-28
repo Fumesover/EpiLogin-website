@@ -11,7 +11,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'epilogin.parou.eu',
-    'epilogin.fr'
+    'epilogin.fr',
+    '127.0.0.1'
 ]
 
 INSTALLED_APPS = [
@@ -63,7 +64,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'HOST': 'epiloginweb-db',
+#        'HOST': 'epiloginweb-db',
+        'HOST': 'localhost',
         'NAME': 'postgres',
         'USER': 'postgres',
     }
@@ -120,6 +122,8 @@ LOGOUT_URL = 'logout'
 LOGIN_REDIRECT_URL = '/home'
 LOGOUT_REDIRECT_URL = '/'
 SESSION_COOKIE_AGE = 10800
+
+AUTH_USER_MODEL = 'users.User'
 
 SOCIAL_AUTH_DISCORD_KEY = "538484508664528908"
 SOCIAL_AUTH_DISCORD_SECRET = "wZBQ6lUHfV71ujKof7DAPrn8Qnvv1KQ-"

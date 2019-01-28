@@ -10,7 +10,7 @@ import json
 
 from website.apps.servers.models import Server
 from website.apps.members.models import Member
-from website.apps.groups.models  import Group
+from website.apps.groups.models  import Group, Ban
 
 class info(View):
     @method_decorator(login_required)
@@ -33,6 +33,13 @@ class update(View):
                 server_id=key,
                 defaults={'name': value['name']}
             )
+
+            for ban in value['bans']:
+                print(ban['type'], ban['data'])
+                ban, created = Ban.objects.get_or_create(
+                    
+                )
+
 
         for key,value in data['members'].items():
             member, created = Member.objects.get_or_create(
