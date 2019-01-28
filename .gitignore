@@ -2,3 +2,4 @@ __pycache__/
 .venv/*
 Dockerfile
 docker-compose.yml
+static/

@@ -9,7 +9,10 @@ SECRET_KEY = 'em*dtbedwo6gs_4-a9lpd3=oq^#s6*$4*5n7kx*)j32m#&th3s'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'epilogin.parou.eu',
+    'epilogin.fr'
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
