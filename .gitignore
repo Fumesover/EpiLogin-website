@@ -4,3 +4,4 @@ Dockerfile
 docker-compose.yml
 static/
 DockerfileStatic
+config/local_settings.py

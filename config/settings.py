@@ -9,25 +9,31 @@ SECRET_KEY = 'em*dtbedwo6gs_4-a9lpd3=oq^#s6*$4*5n7kx*)j32m#&th3s'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'epilogin.parou.eu',
-    'epilogin.fr',
-    '127.0.0.1'
-]
+ALLOWED_HOSTS = []
 
-INSTALLED_APPS = [
+# Application definition
+
+DEFAULT_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+]
+
+THIRD_PARTY_APPS = [
     'social_django',
+]
+
+LOCAL_APPS = [
     'website.apps.users',
     'website.apps.servers',
     'website.apps.members',
     'website.apps.groups',
 ]
+
+INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -54,6 +60,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -61,17 +70,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+# Database
+# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-#        'HOST': 'epiloginweb-db',
         'HOST': 'localhost',
         'NAME': 'postgres',
         'USER': 'postgres',
     }
 }
-SOCIAL_AUTH_POSTGRES_JSONFIELD = True # If using postgres
 
+# Password validation
+# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -88,17 +100,25 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Internationalization
+# https://docs.djangoproject.com/en/2.1/topics/i18n/
+
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Paris'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "website/static/"),
 )
+
+# Social Auth settings and keys
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.discord.DiscordOAuth2',
@@ -126,8 +146,8 @@ SESSION_COOKIE_AGE = 10800
 AUTH_USER_MODEL = 'users.User'
 SOCIAL_AUTH_INACTIVE_USER_URL = '/logout'
 
-SOCIAL_AUTH_DISCORD_KEY = "538484508664528908"
-SOCIAL_AUTH_DISCORD_SECRET = "wZBQ6lUHfV71ujKof7DAPrn8Qnvv1KQ-"
+SOCIAL_AUTH_DISCORD_KEY = ""
+SOCIAL_AUTH_DISCORD_SECRET = ""
 SOCIAL_AUTH_DISCORD_SCOPE = ['email']
 SOCIAL_AUTH_DISCORD_EXTRA_DATA = [
     'avatar',
@@ -135,3 +155,8 @@ SOCIAL_AUTH_DISCORD_EXTRA_DATA = [
     'username',
     'discriminator'
 ]
+
+try:
+    from config.local_settings import *
+except ImportError:
+    pass

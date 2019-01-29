@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>BackToBasics</title>
+    <title>EpiLogin</title>
 
     <link href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -40,7 +40,8 @@
         </a>
         <br>
         <ul class="list">
-            <li><a href="https://www.twitch.tv/backtobasicsepita"><i style="width: 30px;" class="fab fa-twitch"></i>YO</a></li>
+            <li><a href="{% url 'admin:index' %}"><i style="width: 30px;" class="fas fa-hashtag"></i>Admin</a></li>
+            <li><a href="{% url 'users:home' %}"><i style="width: 30px;" class="fas fa-home"></i>Home</a></li>
             <li><a href="{% url 'logout' %}"><i style="width: 30px;" class="fa fa-sign-out-alt"></i>Logout</a></li>
         </ul>
     </div>
@@ -50,5 +51,8 @@
             {% endblock %}
         </div>
     </div>
+
+    {% block javascriptend %}
+    {% endblock %}
 </body>
 </html>

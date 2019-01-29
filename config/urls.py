@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^home/', include('website.apps.users.urls', namespace='home')),
     url(r'^servers/', include('website.apps.servers.urls', namespace='servers')),
     url(r'^members/', include('website.apps.members.urls', namespace='members')),
+    url(r'^groups/', include('website.apps.groups.urls', namespace='groups')),
 
     url(r'^$', users_views.index.as_view(), name='index'),
 ]

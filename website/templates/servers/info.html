@@ -3,7 +3,8 @@
 
 {% block content %}
     <ol class="breadcrumb breadcrumb-arrow">
-        <li><a href="{% url 'users:home' %}">Servers</a></li>
+        <li><a href="{% url 'users:home' %}">Home</a></li>
+        <li><a href="{% url 'servers:list' %}">Servers</a></li>
         <li><span>{{ server.name }}</span></li>
     </ol>
     <div class="row">
@@ -19,6 +20,7 @@
                                 <th>Name</th>
                                 <th>ID</th>
                                 <th>Login</th>
+                                <th>Show</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -35,5 +37,129 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Banned Users</h4>
+                    <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#banModal" data-bantype="user">
+                        New
+                    </button>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="panel-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>UnBan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in bans.users %}
+                                <tr>
+                                    <td> {{ user.value }}   </td>
+                                    <td><a href="{% url 'groups:deleteban' user.pk %}" class="btn btn-primary" role="button">Unban</a></td>
+                                <tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Banned groups</h4>
+                    <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#banModal" data-bantype="group">
+                        New
+                    </button>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="panel-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Group</th>
+                                <th>Unban</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for group in bans.groups %}
+                                <tr>
+                                    <td> {{ group.value }} </td>
+                                    <td><a href="{% url 'groups:deleteban' group.pk %}" class="btn btn-primary" role="button">Unban</a></td>
+                                <tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Banned logins</h4>
+                    <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#banModal" data-bantype="login">
+                        New
+                    </button>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="panel-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Login</th>
+                                <th>Unban</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for login in bans.logins %}
+                                <tr>
+                                    <td> {{ login.value }} </td>
+                                    <td><a href="{% url 'groups:deleteban' login.pk %}" class="btn btn-primary" role="button">Unban</a></td>
+                                <tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
+
+<div class="modal fade" id="banModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel"></h4>
+      </div>
+      <div class="modal-body">
+        <form id="banForm" action="ban" method="post">
+            <input type="hidden" id="type" name="type">
+            {% csrf_token %}
+            <label for="message-text" class="control-label">Value:</label>
+            <input type="text" class="form-control" name="value"></input>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Go Back</button>
+        <button type="submit" class="btn btn-primary" form="banForm">Ban</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block javascriptend %}
+    <script>
+        $('#banModal').on('show.bs.modal', function (event) {
+          var button = $(event.relatedTarget) // Button that triggered the modal
+          var recipient = button.data('bantype') // Extract info from data-* attributes
+
+          // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+          var modal = $(this)
+          modal.find('.modal-title').text('Banning new ' + recipient)
+          modal.find('.modal-body input#type').val(recipient)
+        })
+    </script>
 {% endblock %}

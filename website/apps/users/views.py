@@ -17,7 +17,6 @@ class home(View):
         context = {
             'user': request.user,
             'user_extra': request.user.social_auth.get(provider="discord").extra_data,
-            'servers': Server.objects.all()#.order_by('-date')
         }
 
         return render(request, "users/home.html", context)

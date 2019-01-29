@@ -4,6 +4,7 @@
 {% block content %}
     <ol class="breadcrumb breadcrumb-arrow">
         <li><a href="{% url 'users:home' %}">Home</a></li>
+        <li><a href="">Users</a></li>
         <li><span>{{ profile.id }}</span></li>
     </ol>
     <div class="row">
@@ -36,10 +37,16 @@
                 </div>
             </div>
         </div>
+        
+        {% if profile.login %}
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">User groups</h3>
+                    <h4 class="panel-title pull-left" style="padding-top: 7.5px;">User groups</h4>
+                    <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#groupModal">
+                        New
+                    </button>
+                    <div class="clearfix"></div>
                 </div>
                 <div class="panel-body">
                     <div style="display: block;max-height: 265px;overflow-y: auto;">
@@ -47,11 +54,15 @@
                             <thead>
                                 <tr>
                                     <th>Group</th>
+                                    <th>Delete</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for group in groups %}
-                                    <tr> <td> {{ group.group }} </td> </tr>
+                                    <tr>
+                                        <td> {{ group.group }} </td>
+                                        <td><a href="{% url 'groups:deletegroup' group.pk %}" class="btn btn-primary" role="button">Delete</a></td>
+                                    </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
@@ -59,6 +70,8 @@
                 </div>
             </div>
         </div>
+        {% endif %}
+
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -86,4 +99,25 @@
         </div>
     </div>
 
+    <div class="modal fade" id="groupModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="exampleModalLabel"></h4>
+          </div>
+          <div class="modal-body">
+            <form id="banForm" action="addgroup" method="post">
+                {% csrf_token %}
+                <label for="message-text" class="control-label">Group:</label>
+                <input type="text" class="form-control" name="value"></input>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Go Back</button>
+            <button type="submit" class="btn btn-primary" form="banForm">Ban</button>
+          </div>
+        </div>
+      </div>
+    </div>
 {% endblock %}
