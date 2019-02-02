@@ -39,13 +39,16 @@
                 </div>
             </div>
         </div>
+        {% if perms.groups.view_ban %}
         <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Banned Users</h4>
+                    {% if perms.groups.add_ban %}
                     <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#banModal" data-bantype="user">
                         New
                     </button>
+                    {% endif %}
                     <div class="clearfix"></div>
                 </div>
                 <div class="panel-body">
@@ -53,14 +56,18 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>UnBan</th>
+                                {% if perms.groups.delete_ban %}
+                                <th>Unban</th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
                             {% for user in bans.users %}
                                 <tr>
                                     <td> {{ user.value }}   </td>
+                                    {% if perms.groups.delete_ban %}
                                     <td><a href="{% url 'groups:deleteban' user.pk %}" class="btn btn-primary" role="button">Unban</a></td>
+                                    {% endif %}
                                 <tr>
                             {% endfor %}
                         </tbody>
@@ -72,9 +79,11 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Banned groups</h4>
+                    {% if perms.groups.add_ban %}
                     <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#banModal" data-bantype="group">
                         New
                     </button>
+                    {% endif %}
                     <div class="clearfix"></div>
                 </div>
                 <div class="panel-body">
@@ -82,14 +91,18 @@
                         <thead>
                             <tr>
                                 <th>Group</th>
+                                {% if perms.groups.delete_ban %}
                                 <th>Unban</th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
                             {% for group in bans.groups %}
                                 <tr>
                                     <td> {{ group.value }} </td>
+                                    {% if perms.groups.delete_ban %}
                                     <td><a href="{% url 'groups:deleteban' group.pk %}" class="btn btn-primary" role="button">Unban</a></td>
+                                    {% endif %}
                                 <tr>
                             {% endfor %}
                         </tbody>
@@ -101,9 +114,11 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Banned logins</h4>
+                    {% if perms.groups.add_ban %}
                     <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#banModal" data-bantype="login">
                         New
                     </button>
+                    {% endif %}
                     <div class="clearfix"></div>
                 </div>
                 <div class="panel-body">
@@ -111,14 +126,18 @@
                         <thead>
                             <tr>
                                 <th>Login</th>
+                                {% if perms.groups.delete_ban %}
                                 <th>Unban</th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
                             {% for login in bans.logins %}
                                 <tr>
                                     <td> {{ login.value }} </td>
+                                    {% if perms.groups.delete_ban %}
                                     <td><a href="{% url 'groups:deleteban' login.pk %}" class="btn btn-primary" role="button">Unban</a></td>
+                                    {% endif %}
                                 <tr>
                             {% endfor %}
                         </tbody>
@@ -127,7 +146,9 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
+{% if perms.groups.add_ban %}
 <div class="modal fade" id="banModal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -150,6 +171,8 @@
     </div>
   </div>
 </div>
+{% endif %}
+
 {% endblock %}
 
 {% block javascriptend %}

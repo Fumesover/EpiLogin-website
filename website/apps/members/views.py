@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
@@ -32,7 +32,7 @@ class profile(View):
 
 class addgroup(View):
     @method_decorator(login_required)
-    @method_decorator(staff_member_required)
+    @method_decorator(permission_required('groups.add_group'))
     def post(self, request, id):
         member = get_object_or_404(Member, id=id)
 

@@ -40,7 +40,9 @@
         </a>
         <br>
         <ul class="list">
-            <li><a href="{% url 'admin:index' %}"><i style="width: 30px;" class="fas fa-hashtag"></i>Admin</a></li>
+            {% if user.is_superuser %}
+                <li><a href="{% url 'admin:index' %}"><i style="width: 30px;" class="fas fa-hashtag"></i>Admin</a></li>
+            {% endif %}
             <li><a href="{% url 'users:home' %}"><i style="width: 30px;" class="fas fa-home"></i>Home</a></li>
             <li><a href="{% url 'logout' %}"><i style="width: 30px;" class="fa fa-sign-out-alt"></i>Logout</a></li>
         </ul>

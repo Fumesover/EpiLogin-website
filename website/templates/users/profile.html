@@ -37,15 +37,17 @@
                 </div>
             </div>
         </div>
-        
-        {% if profile.login %}
+
+        {% if profile.login and perms.groups.view_group %}
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h4 class="panel-title pull-left" style="padding-top: 7.5px;">User groups</h4>
+                    {% if perms.groups.add_group %}
                     <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#groupModal">
                         New
                     </button>
+                    {% endif %}
                     <div class="clearfix"></div>
                 </div>
                 <div class="panel-body">
@@ -54,14 +56,18 @@
                             <thead>
                                 <tr>
                                     <th>Group</th>
+                                    {% if perms.groups.delete_group %}
                                     <th>Delete</th>
+                                    {% endif %}
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for group in groups %}
                                     <tr>
                                         <td> {{ group.group }} </td>
+                                        {% if perms.groups.delete_group %}
                                         <td><a href="{% url 'groups:deletegroup' group.pk %}" class="btn btn-primary" role="button">Delete</a></td>
+                                        {% endif %}
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -99,6 +105,7 @@
         </div>
     </div>
 
+    {% if perms.groups.add_group %}
     <div class="modal fade" id="groupModal" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -115,9 +122,10 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Go Back</button>
-            <button type="submit" class="btn btn-primary" form="banForm">Ban</button>
+            <button type="submit" class="btn btn-primary" form="banForm">Add group</button>
           </div>
         </div>
       </div>
     </div>
+    {% endif %}
 {% endblock %}
