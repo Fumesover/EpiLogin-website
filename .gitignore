@@ -2,6 +2,6 @@ __pycache__/
 .venv/*
 Dockerfile
 docker-compose.yml
-static/
+/static/
 DockerfileStatic
 config/local_settings.py

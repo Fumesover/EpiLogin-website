@@ -32,6 +32,7 @@ UPDATE_TYPES = (
     ('ban', 'BAN'),
     ('addgroup', 'ADDGROUP'),
     ('delgroup', 'DELGROUP'),
+    ('certify', 'CERTIFY'),
 )
 
 class Update(Model):

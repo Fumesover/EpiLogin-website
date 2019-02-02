@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -14,6 +15,7 @@ from website.apps.groups.models  import Group, Ban, Update
 
 class profile(View):
     @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def get(self, request, id):
         member  = get_object_or_404(Member, id=id)
         servers = Server.objects.filter(members__in=[member])
@@ -30,6 +32,7 @@ class profile(View):
 
 class addgroup(View):
     @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def post(self, request, id):
         member = get_object_or_404(Member, id=id)
 

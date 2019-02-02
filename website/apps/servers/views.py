@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -15,6 +16,7 @@ from website.apps.groups.models  import Group, Ban, Update
 
 class info(View):
     @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def get(self, request, server_id):
         server = get_object_or_404(Server, server_id=server_id)
         bans = {
@@ -34,6 +36,7 @@ class info(View):
 
 class list(View):
     @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def get(self, request):
         context = {
             'user': request.user,
@@ -95,6 +98,7 @@ class update(View):
             'ban':   [],
             'addgroup': [],
             'delgroup': [],
+            'certify': [],
         }
 
         for update in updates:
@@ -120,6 +124,12 @@ class update(View):
                 })
             elif update.type == 'delgroup':
                 data['delgroup'].append({
+                    'pk':    update.pk,
+                    'login': update.login,
+                    'value': update.value,
+                })
+            elif update.type == 'certify':
+                data['certify'].append({
                     'pk':    update.pk,
                     'login': update.login,
                     'value': update.value,
@@ -155,12 +165,12 @@ class push(View):
 
         if 'delgroup' in data:
             for delgroup in data['delgroup']:
-                group = Group.objects.get(
+                groups = Group.objects.filter(
                     login=delgroup['login'],
                     group=delgroup['group']
                 )
 
-                if group:
+                for group in groups:
                     group.delete()
 
         if 'bans' in data:
@@ -209,6 +219,7 @@ class push(View):
 
 class ban(View):
     @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def post(self, request, server_id):
         data = request.POST
 

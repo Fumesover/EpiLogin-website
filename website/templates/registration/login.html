@@ -14,9 +14,29 @@
 
 <body>
     <div class="center-div">
-        <div class="backtobasics-logo"></div>
-        <a href="{% url 'social:begin' 'discord' %}" class="button">Login</a>
+        <div class="epilogin-logo"></div>
+
+        <div class="cgu">
+            <p><input type="checkbox" onchange="toggleLink(this);">
+                J'ai lu et j'accepte les <a href="/static/CGU.html">CGU</a>
+            </p>
+        </div>
+
+        <a href="{% url 'social:begin' 'microsoft-graph' %}?next={{ request.GET.next }}" class="button" id="loginlink" style="pointer-events: none">
+            Connect with Office 365
+        </a>
     </div>
+
+    <script type="text/javascript">
+    function toggleLink(checkBox){
+        var link = document.getElementById("loginlink");
+
+        if (checkBox.checked)
+            link.setAttribute("style", "pointer-events: auto")
+        else
+            link.setAttribute("style", "pointer-events: none")
+    }
+    </script>
 </body>
 
 </html>

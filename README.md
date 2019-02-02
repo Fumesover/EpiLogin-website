@@ -28,3 +28,7 @@ Load fixtures
 
 Run the development server on 127.0.0.1:8000
 > python3 manane.py runserver
+
+
+
+> https://apps.dev.microsoft.com

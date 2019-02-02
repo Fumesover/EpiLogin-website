@@ -19,4 +19,5 @@ urlpatterns = [
     url(r'^groups/', include('website.apps.groups.urls', namespace='groups')),
 
     url(r'^$', users_views.index.as_view(), name='index'),
+    url(r'^certify/$', users_views.certify.as_view(), name='certify'),
 ]

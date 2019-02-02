@@ -43,6 +43,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -122,6 +123,7 @@ STATICFILES_DIRS = (
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.discord.DiscordOAuth2',
+    'social_core.backends.microsoft.MicrosoftOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -141,7 +143,6 @@ LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 LOGIN_REDIRECT_URL = '/home'
 LOGOUT_REDIRECT_URL = '/'
-SESSION_COOKIE_AGE = 10800
 
 AUTH_USER_MODEL = 'users.User'
 SOCIAL_AUTH_INACTIVE_USER_URL = '/logout'
@@ -155,6 +156,9 @@ SOCIAL_AUTH_DISCORD_EXTRA_DATA = [
     'username',
     'discriminator'
 ]
+
+SOCIAL_AUTH_MICROSOFT_KEY = ""
+SOCIAL_AUTH_MICROSOFT_SECRET = ""
 
 try:
     from config.local_settings import *
