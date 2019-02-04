@@ -29,6 +29,10 @@ Load fixtures
 Run the development server on 127.0.0.1:8000
 > python3 manane.py runserver
 
+# Tokens
 
+To run this projet, you need a discord app & a microsoft app
 
-> https://apps.dev.microsoft.com
+You can find this tokens here:
+- https://apps.dev.microsoft.com
+- https://discordapp.com/developers
