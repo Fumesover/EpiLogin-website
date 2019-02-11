@@ -1,21 +1,192 @@
 {% load static %}
 
-<html lang="en">
-
+<!doctype html>
+<html lang="fr">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="epilogin, discord, serveur, logiciel, infosup, infospe, ing1, ing2, ing3, epita, epifun">
+    <meta name="description" content="EpiLogin est un logiciel de gestion de serveur pour les étudiants d'EPITA qui permet une connexion rapide et sécurisée à différents serveurs Discord partenaires">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-    <title>EpiLogin</title>
+    <title>EpiLogin | Solution de gestion de serveur Discord</title>
 
-    <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous" rel="stylesheet">
+	<link href='https://fonts.googleapis.com/css?family=Montserrat&amp;subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Oleo+Script&amp;subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/mainpage.css' %}">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.js"></script>
+
+	<script src="{% static 'js/blocks.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/3.0.0/lazysizes.min.js" integrity="sha256-3aNzF0qAl+dcYi1jq/8xNvw6wR5tzgo4AOAacEleQVk=" crossorigin="anonymous"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
     <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.png' %}"/>
 </head>
-
 <body>
-    <div class="center-div">
-        <div class="epilogin-logo"></div>
-    </div>
+<div class="page-container">
+<div class="bloc bloc-fill-screen bg-background-epita d-bloc b-parallax bloc-bg-texture texture-darken" id="principal">
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-10 offset-sm-1 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+				<img src="{% static 'img/mainpage/lazyload-ph.png' %}" data-src="{% static 'img/mainpage/EpiLogin_logo.png' %}" class="img-fluid mx-auto d-block img-style mg-sm lazyload" />
+				<h2 class="mg-md text-lg-center h3-style">
+					<strong>EpiLogin</strong> for Discord
+				</h2>
+			</div>
+		</div>
+	</div>
+	<div class="container fill-bloc-bottom-edge">
+		<div class="row">
+			<div class="col-12">
+				<h6 class="text-lg-center h6-heading-style mg-sm">
+					<a href="#" data-scroll-speed="1000" onclick="scrollToTarget('#apropos',this)">En savoir plus</a><br>
+				</h6>
+				<div class="text-center">
+					<a href="#" data-scroll-speed="1000" onclick="scrollToTarget('#apropos',this)"><span class="fa fa-angle-double-down icon-md"></span></a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<a class="bloc-button btn btn-d scrollToTop" onclick="scrollToTarget('1',this)"><span class="fa fa-chevron-up"></span></a>
+<div class="bloc l-bloc" id="apropos">
+	<div class="container bloc-xl">
+		<div class="row">
+			<div class="col-sm-4 col">
+				<h2 class="mg-md h2-style">
+					À propos
+				</h2>
+			</div>
+			<div class="col-sm-8 col">
+				<p class="p-style">
+					<strong>EpiLogin</strong> est un logiciel de gestion de serveur qui est la contraction de
+                    « EPITA » et « login ». Conçu en 2018, il permet aux étudiants de l'EPITA d&rsquo;être
+                    authentifié sur nos différents serveurs Discord partenaires. Le bot permet une authentification
+                    rapide et sécurisée via la plateforme Microsoft® Office 365 et vérifie la concordance des données
+                    avec le CRI.&nbsp;Cette solution a l&rsquo;avantage de garantir à l&rsquo;élève une connexion sécurisé
+                    et nous permet de sécuriser l&rsquo;accès aux différents serveurs.
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="bloc bloc-bg-texture texture-darken b-parallax bg-1-2Ay-a15g3devAElMxninnajw d-bloc " id="commentcamarche">
+	<div class="container bloc-xxl">
+		<div class="row">
+			<div class="col-sm-10 offset-sm-1 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+				<div class="text-center">
+					<span class="fa fa-check icon-md"></span>
+				</div>
+				<h2 class="mg-md h2-heading-style text-lg-center">
+					Comment ça marche ?
+				</h2>
+				<h5 class="mg-md h5-style">
+					Étudiant à l&rsquo;EPITA ? La certification de votre compte Discord prend moins de 2min !
+				</h5>
+				<h5 class="h5-2-style mg-clear">
+					<span class="fa fa-star"></span><span>&nbsp;Connectez-vous sur Discord et rejoignez un serveur Discord partenaire.</span>
+				</h5>
+				<h5 class="h5-2-style mg-sm">
+					<span class="fa fa-star"></span>&nbsp;Vous recevrez un message automatique avec une procédure à suivre utilisant votre compte étudiant Office 365®.
+				</h5>
+				<h5 class="h5-2-style mg-lg">
+					<span class="fa fa-star"></span>&nbsp;Quand vous aurez validé votre compte, vous pourrez accéder à <u>l&rsquo;ensemble</u> des serveurs partenaires sans besoin de s&rsquo;authentifier à nouveau.
+				</h5>
+				<div class="embed-responsive embed-responsive-16by9">
+					<iframe class="embed-responsive-item lazyload" src="{% static 'img/mainpage/lazyload-ph.png' %}" data-src="https://www.youtube.com/embed/mIMRwxKba24" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen>
+					</iframe>
+				</div>
+				<h6 class="mg-md h6-2-style text-lg-center">
+					Étant soucieux du respect de la vie privée et en conformité avec la loi RGPD, vous pouvez nous contacter afin d&rsquo;obtenir une copie de vos données.
+				</h6>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="bloc l-bloc" id="partenaires">
+	<div class="container bloc-xl">
+		<div class="row">
+			<div class="col-sm-10 offset-sm-1 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+				<h2 class="mg-md text-lg-center h2-bloc-3-style">
+					Nos serveurs partenaires
+				</h2>
+				<div class="card-columns">
+					<img src="{% static 'img/mainpage/lazyload-ph.png' %}" data-src="{% static 'img/mainpage/2022.png'     %}" class="img-fluid mg-sm lazyload" />
+                    <img src="{% static 'img/mainpage/lazyload-ph.png' %}" data-src="{% static 'img/mainpage/btb.png'      %}" class="img-fluid mg-sm lazyload" />
+                    <img src="{% static 'img/mainpage/lazyload-ph.png' %}" data-src="{% static 'img/mainpage/epimac.png'   %}" class="img-fluid mg-sm lazyload" />
+                    <img src="{% static 'img/mainpage/lazyload-ph.png' %}" data-src="{% static 'img/mainpage/2023.png'     %}" class="img-fluid mg-sm lazyload" />
+                    <img src="{% static 'img/mainpage/lazyload-ph.png' %}" data-src="{% static 'img/mainpage/epifun.png'   %}" class="img-fluid mg-sm lazyload" />
+                    <img src="{% static 'img/mainpage/lazyload-ph.png' %}" data-src="{% static 'img/mainpage/redux.png'    %}" class="img-fluid mg-sm lazyload" />
+                    <img src="{% static 'img/mainpage/lazyload-ph.png' %}" data-src="{% static 'img/mainpage/2024.png'     %}" class="img-fluid mg-sm lazyload" />
+                    <img src="{% static 'img/mainpage/lazyload-ph.png' %}" data-src="{% static 'img/mainpage/foodit.png'   %}" class="img-fluid mg-sm lazyload" />
+                    <img src="{% static 'img/mainpage/lazyload-ph.png' %}" data-src="{% static 'img/mainpage/epilogin.png' %}" class="img-fluid mg-sm lazyload" />
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="bloc bgc-black d-bloc" id="basdepage">
+	<div class="container bloc-md">
+		<div class="row">
+			<div class="col">
+				<img src="{% static 'img/mainpage/lazyload-ph.png' %}" data-src="{% static 'img/mainpage/EpiLogin_logo.png' %}" class="img-fluid mx-auto d-block img-8-style lazyload" />
+				<h6 class="text-lg-center h6-style mg-clear">
+					<strong>EpiLogin</strong> for Discord
+				</h6>
+				<div class="divider-h">
+					<span class="divider"></span>
+				</div>
+				<div class="row">
+					<div class="col">
+						<h4 class="mg-md text-sm-left text-center tc-white h4-style">
+							À propos
+						</h4><a href="/team" class="a-btn a-block footer-link">L'équipe</a><a href="mailto:contact@epilogin.fr" class="a-btn a-block footer-link">Nous contacter</a>
+					</div>
+					<div class="col">
+						<h4 class="mg-md text-sm-left text-center tc-white h4-mentions-style">
+							Mentions légales
+						</h4><a href="/cgu" class="a-btn a-block footer-link">Conditions d'utilisation</a> <a href="/privacy" class="a-btn a-block footer-link">Confidentialité &amp; RGPD</a>
+					</div>
+					<div class="col offset-lg--1">
+						<h4 class="mg-md text-sm-left text-center tc-white h4-nous-style">
+							Nous suivre
+						</h4>
+						<div class="row">
+							<div class="col-6 col-sm-2 col offset-sm-0">
+								<div class="text-center">
+									<a href="https://www.facebook.com/EpiLogin-764253667285317/" target="_blank"><span class="fab fa-facebook-square icon-md"></span></a>
+								</div>
+							</div>
+							<div class="col-6 col-sm-2">
+								<div class="text-center">
+									<a href="https://www.youtube.com/channel/UCYi6M9fkPtmFd5pz5xozQhg" target="_blank"><span class="fab fa-youtube icon-md"></span></a>
+								</div>
+							</div>
+							<div class="col-6 col-sm-2">
+								<div class="text-center">
+									<a href="https://github.com/Fumesover/EpiLogin" target="_blank"><span class="fab fa-github-alt icon-md"></span></a>
+								</div>
+							</div>
+							<div class="col-6 col-sm-2">
+								<div class="text-center">
+									<a href="mailto:contact@epilogin.fr" target="_blank"><span class="fa fa-envelope icon-md"></span></a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col">
+						<a href="https://www.ionis-group.com" target="_blank"><img src="{% static 'img/mainpage/lazyload-ph.png' %}" data-src="{% static 'img/mainpage/ionis.png' %}" class="img-fluid img-9-style mx-auto d-block lazyload" /></a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<div id="page-loading-blocs-notifaction" class="page-preloader"></div>
 </body>
-
 </html>

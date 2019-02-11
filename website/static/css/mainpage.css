@@ -1,4 +1,4 @@
-html{overflow-x: hidden;} 
+html{overflow-x: hidden;}
 body{
 	margin:0;
 	padding:0;
@@ -9,7 +9,7 @@ body{
 }
 a,button{transition: background .3s ease-in-out;outline: none!important;}
 a:hover{text-decoration: none; cursor:pointer;}
-.page-preloader{position: fixed;top: 0;bottom: 0;width: 100%;z-index:100000;background:#FFFFFF url("img/pageload-spinner.gif") no-repeat center center;}
+.page-preloader{position: fixed;top: 0;bottom: 0;width: 100%;z-index:100000;background:#FFFFFF url("/static/img/mainpage/pageload-spinner.gif") no-repeat center center;}
 .bloc{
 	width:100%;
 	clear:both;
@@ -329,23 +329,23 @@ h1,h2,h3,h4,h5,h6,p,label,.btn,a{
 	color:#FFFFFF!important;
 }
 .bg-background-epita{
-	background-image:url("img/background_epita.jpg");
+	background-image:url("/static/img/mainpage/background_epita.jpg");
 }
 .bg-1-2Ay-a15g3devAElMxninnajw{
-	background-image:url("img/discord.png");
+	background-image:url("/static/img/mainpage/discord.png");
 }
 .bg-1-2Ay-a15g3devAElMxninnajw{
-	background-image:url("img/discord.png");
+	background-image:url("/static/img/mainpage/discord.png");
 }
 @media (max-width: 1024px)
 {
     .bloc{
-        padding-left: 20px; 
-        padding-right: 20px;  
+        padding-left: 20px;
+        padding-right: 20px;
     }
     .bloc.full-width-bloc, .bloc-tile-2.full-width-bloc .container, .bloc-tile-3.full-width-bloc .container, .bloc-tile-4.full-width-bloc .container{
-        padding-left: 0; 
-        padding-right: 0;  
+        padding-left: 0;
+        padding-right: 0;
     }
 }
 @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {.b-parallax{background-attachment:scroll;}}
@@ -367,7 +367,7 @@ h1,h2,h3,h4,h5,h6,p,label,.btn,a{
     .b-parallax{
         background-attachment:scroll;
     }
-    
+
     .bloc-tile-2 .container, .bloc-tile-3 .container, .bloc-tile-4 .container{
         padding-left:0;padding-right:0;
     }
@@ -375,7 +375,7 @@ h1,h2,h3,h4,h5,h6,p,label,.btn,a{
         padding:0 10px;
     }
     .btn-dwn{
-       display:none; 
+       display:none;
     }
     .voffset{
         margin-top:5px;
