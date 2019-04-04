@@ -5,7 +5,7 @@ from website.apps.members.models import Member
 class MemberAdmin(admin.ModelAdmin):
     list_display = (
         'id',
-        'username',
+        'hash',
         'login'
     )
 

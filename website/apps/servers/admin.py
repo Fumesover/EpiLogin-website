@@ -4,8 +4,7 @@ from website.apps.servers.models import Server
 
 class ServerAdmin(admin.ModelAdmin):
     list_display = (
-        'name',
-        'server_id',
+        'id',
     )
 
 admin.site.register(Server, ServerAdmin)

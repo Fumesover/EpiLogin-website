@@ -23,8 +23,7 @@
     "fields": {
       "user": 1,
       "provider": "discord",
-      "uid": "329630124070666240",
-      "extra_data": "{\"id\": \"329630124070666240\", \"avatar\": \"1f44edb172b87085c3ecfd151c021b40\", \"expires\": 604800, \"username\": \"FumesOver\", \"auth_time\": 1548675067, \"token_type\": \"Bearer\", \"access_token\": \"eAbWpm0wliTTCKMyWZmmaAxjT29sa3\", \"discriminator\": \"0316\", \"refresh_token\": \"UKF7h5W02hKdrXgLA2x1IKdsSePyTK\"}"
+      "uid": "329630124070666240"
     }
   }
 ]

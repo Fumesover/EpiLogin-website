@@ -24,6 +24,8 @@ DEFAULT_APPS = [
 
 THIRD_PARTY_APPS = [
     'social_django',
+    'rest_framework',
+    'django_filters',
 ]
 
 LOCAL_APPS = [
@@ -31,6 +33,7 @@ LOCAL_APPS = [
     'website.apps.servers',
     'website.apps.members',
     'website.apps.groups',
+    'website.apps.api',
 ]
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -101,6 +104,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Django Rest Framwork settings
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        # 'rest_framework.permissions.IsAuthenticated',
+        # 'rest_framework.permissions.DjangoModelPermissions',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100,
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
@@ -143,6 +160,7 @@ LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 LOGIN_REDIRECT_URL = '/home'
 LOGOUT_REDIRECT_URL = '/'
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/login/?error'
 
 AUTH_USER_MODEL = 'users.User'
 SOCIAL_AUTH_INACTIVE_USER_URL = '/logout'

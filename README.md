@@ -11,7 +11,7 @@ You will need python3 and pip installed.
 
 First, create a python environment:
 > python -m venv .venv
-> source venv/bin/activate
+> source .venv/bin/activate
 
 Then, install requirements:
 > pip3 install -r requirements.txt
