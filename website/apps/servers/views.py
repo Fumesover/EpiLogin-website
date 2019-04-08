@@ -24,7 +24,7 @@ class info(View):
         bans = {
             'users':  Ban.objects.filter(server=server, type='user'),
             'groups': Ban.objects.filter(server=server, type='group'),
-            'logins': Ban.objects.filter(server=server, type='login'),
+            'emails': Ban.objects.filter(server=server, type='email'),
         }
 
         ranks = {

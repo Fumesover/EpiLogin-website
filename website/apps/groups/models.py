@@ -6,11 +6,11 @@ from website.apps.servers.models import Server
 class Group(Model):
 
     group = models.CharField(max_length=128)
-    login = models.CharField(max_length=128)
+    email = models.CharField(max_length=128)
 
 BAN_TYPES = (
     ('group', 'GROUP'),
-    ('login', 'LOGIN'),
+    ('email', 'EMAIL'),
     ('user', 'USER'),
 )
 
@@ -50,5 +50,5 @@ class Update(Model):
         choices=BAN_TYPES,
         max_length=20
     )
-    login = models.CharField(max_length=64, default='')
+    email = models.CharField(max_length=64, default='')
     value = models.CharField(max_length=64, default='')

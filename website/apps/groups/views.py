@@ -35,13 +35,13 @@ class deletegroup(View):
     def get(self, request, pk):
         group = get_object_or_404(Group, pk=pk)
 
-        login = group.login
+        email = group.email
 
-        member = get_object_or_404(Member, login=login)
+        member = get_object_or_404(Member, email=email)
 
         Update(
             type='delgroup',
-            login=group.login,
+            email=group.email,
             value=group.group,
         ).save()
 

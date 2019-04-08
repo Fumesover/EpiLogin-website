@@ -11,5 +11,5 @@ class Member(Model):
 
     id       = models.BigIntegerField(primary_key=True)
     hash     = models.CharField(max_length=128, default=generate_hash, blank=True)
-    login    = models.CharField(max_length=128, blank=True)
+    email    = models.CharField(max_length=128, blank=True)
     servers  = models.ManyToManyField(Server, blank=True)

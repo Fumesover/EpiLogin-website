@@ -158,24 +158,24 @@
                 </table>
             </div>
             {% endif %}
-            {% if bans.logins %}
+            {% if bans.emails %}
             <div class="mdl-grid mdl-cell mdl-cell--4-col mdl-card mdl-shadow--4dp">
                 <table class="mdl-data-table mdl-js-data-table" style="width: 100%;">
                     <thead>
                         <tr>
-                            <th class="mdl-data-table__cell--non-numeric">Banned logins</th>
+                            <th class="mdl-data-table__cell--non-numeric">Banned emailss</th>
                             {% if perms.groups.delete_ban %}
                                 <th>Delete</th>
                             {% endif %}
                         </tr>
                     </thead>
                     <tbody>
-                        {% for login in bans.logins %}
+                        {% for email in bans.emails %}
                             <tr>
-                                <td class="mdl-data-table__cell--non-numeric">{{ login.value }}</td>
+                                <td class="mdl-data-table__cell--non-numeric">{{ email.value }}</td>
                                 {% if perms.groups.delete_ban %}
                                     <td>
-                                        <a href="{% url 'groups:deleteban' login.pk %}">
+                                        <a href="{% url 'groups:deleteban' email.pk %}">
                                             <i class="material-icons mdl-list__item-icon">delete</i>
                                         </a>
                                     </td>
@@ -295,7 +295,7 @@
         <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
             <button type="button" class="mdl-button show-modal" data-modal="#modal_form" data-title="Banning user" data-type="ban-user">User</button>
             <button type="button" class="mdl-button show-modal" data-modal="#modal_form" data-title="Banning group" data-type="ban-group">Group</button>
-            <button type="button" class="mdl-button show-modal" data-modal="#modal_form" data-title="Banning login" data-type="ban-login">Login</button>
+            <button type="button" class="mdl-button show-modal" data-modal="#modal_form" data-title="Banning email" data-type="ban-email">Email</button>
             <button type="button" class="mdl-button close">Close</button>
         </div>
     </dialog>

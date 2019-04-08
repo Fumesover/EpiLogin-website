@@ -30,8 +30,8 @@ class home(View):
 class certify(View):
     @method_decorator(login_required)
     def get(self, request):
-        print(request.user.email)
-        login, domain = request.user.email.split('@')
+        # print(request.user.email)
+        _, domain = request.user.email.split('@')
         if domain != 'epita.fr':
             logout(request)
             return redirect('/login/?next=/certify/?token=' + request.GET['token'])
@@ -43,12 +43,12 @@ class certify(View):
                 return None # TODO: HANDLE ERROR
 
             member.hash = ''
-            member.login = login
+            member.email = request.user.email
             member.save()
 
             Update(
                 type='certify',
-                login=login,
+                email=email,
                 value=member.id,
             ).save()
             return redirect('certify')

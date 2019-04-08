@@ -13,13 +13,13 @@ class UpdateViewSet(viewsets.ModelViewSet):
     queryset = Update.objects.all()
     serializer_class = UpdateSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('type', 'ban_type', 'server', 'login')
+    filterset_fields = ('type', 'ban_type', 'server', 'email')
 
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('login', 'group')
+    filterset_fields = ('email', 'group')
 
 class RankViewSet(viewsets.ModelViewSet):
     queryset = Rank.objects.all()
@@ -33,15 +33,15 @@ class MemberViewSet(viewsets.ModelViewSet):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('login', 'servers')
+    filterset_fields = ('email', 'servers')
 
     @action(detail=True, methods=['post'])
     def certify(self, request, pk=None):
-        login = request.data.get('login')
+        email = request.data.get('email')
 
-        if login:
+        if email:
             member, _ = Member.objects.get_or_create({'pk': pk})
-            member.login = login
+            member.email = email
             member.hash = ''
             member.save()
             return Response({'status': 'User certified'})

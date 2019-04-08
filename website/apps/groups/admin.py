@@ -5,7 +5,7 @@ from website.apps.groups.models import Group, Ban, Update
 class GroupsAdmin(admin.ModelAdmin):
     list_display = (
         'group',
-        'login'
+        'email'
     )
 
 class BansAdmin(admin.ModelAdmin):

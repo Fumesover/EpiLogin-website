@@ -6,7 +6,7 @@ class MemberAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'hash',
-        'login'
+        'email'
     )
 
 admin.site.register(Member, MemberAdmin)

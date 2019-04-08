@@ -30,20 +30,18 @@ class profile(View):
 
         context = {
             'member': member,
-            'member_groups': Group.objects.filter(login=member.login),
+            'member_groups': Group.objects.filter(email=member.email),
         }
 
-        if member.login:
-            context['groups'] = Group.objects.filter(login=member.login)
+        if member.email:
+            context['groups'] = Group.objects.filter(email=member.email)
 
         return render(request, "members/profile.html", context)
 
     @method_decorator(login_required)
     def post(self, request, id):
         member = get_object_or_404(Member, id=id)
-        print(request.POST)
-        member.login = request.POST.get('login', '')
-        print(member.login)
+        member.email = request.POST.get('email', '')
         member.save()
 
         return redirect('members:profile', id=member.id)
@@ -55,19 +53,19 @@ class addgroup(View):
     def post(self, request, id):
         member = get_object_or_404(Member, id=id)
 
-        if member.login == '':
-            return HttpResponseNotFound('User does not get a login')
+        if member.email == '':
+            return HttpResponseNotFound('User does not get an email')
 
         data = request.POST
 
         Group(
-            login=member.login,
+            email=member.email,
             group=data['group'],
         ).save()
 
         Update(
             type     = 'addgroup',
-            login    = member.login,
+            email    = member.email,
             value    = data['group']
         ).save()
 

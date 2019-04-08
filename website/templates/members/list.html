@@ -27,7 +27,7 @@
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Login</th>
+                                <th>Email</th>
                                 <th>ID</th>
                                 <th>Show</th>
                             </tr>
@@ -36,7 +36,7 @@
                             {% for member in members %}
                                 <tr>
                                     <td>{{ member.name }}</td>
-                                    <td>{{ member.login }}</td>
+                                    <td>{{ member.email }}</td>
                                     <td>{{ member.pk }}</td>
                                     <td>
                                         <a href="{% url 'members:profile' member.pk %}" class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary">
