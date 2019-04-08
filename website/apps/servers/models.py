@@ -3,6 +3,10 @@ from django.db.models import Model
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth import get_user_model
 
+class EmailDomain(Model):
+
+    domain = models.CharField(max_length=64)
+
 class Server(Model):
 
     id              = models.BigIntegerField(primary_key=True)
@@ -12,6 +16,7 @@ class Server(Model):
     channel_request = models.BigIntegerField(default=0)
     admins          = models.ManyToManyField(get_user_model(), blank=True, related_name='admin')
     moderators      = models.ManyToManyField(get_user_model(), blank=True, related_name='moderator')
+    emails_domains  = models.ManyToManyField(EmailDomain, blank=True)
 
 RANK_TYPES = (
     ('classic', 'CLASSIC'),

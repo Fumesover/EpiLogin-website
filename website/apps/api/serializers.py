@@ -4,11 +4,16 @@ from rest_framework.response import Response
 
 from website.apps.groups.models import Group, Ban, Update
 from website.apps.members.models import Member
-from website.apps.servers.models import Server, Rank
+from website.apps.servers.models import Server, Rank, EmailDomain
 
 class BanSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ban
+        fields = '__all__'
+
+class EmailDomainSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmailDomain
         fields = '__all__'
 
 class RankSerializer(serializers.ModelSerializer):
@@ -17,8 +22,9 @@ class RankSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ServerSerializer(serializers.ModelSerializer):
-    rank_set = RankSerializer(many=True)
-    ban_set  = BanSerializer(many=True)
+    rank_set       = RankSerializer(many=True)
+    ban_set        = BanSerializer(many=True)
+    emails_domains = EmailDomainSerializer(many=True)
 
     class Meta:
         model = Server

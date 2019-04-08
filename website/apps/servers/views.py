@@ -6,12 +6,12 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from social_django.models import UserSocialAuth
 from django.contrib.auth import get_user_model
 import json
 
-from website.apps.servers.models import Server, Rank
+from website.apps.servers.models import Server, Rank, EmailDomain
 from website.apps.members.models import Member
 from website.apps.groups.models  import Group, Ban, Update
 
@@ -86,6 +86,12 @@ class info(View):
                 server.moderators.add(user.user)
             elif type[1] == 'admin':
                 server.admins.add(user.user)
+        elif type[0] == 'domain':
+            domain = EmailDomain(domain=value)
+            domain.save()
+
+            server.emails_domains.add(domain)
+            server.save()
 
         return redirect('servers:info', pk=pk)
 
@@ -162,3 +168,12 @@ class delmod(View):
         server.save()
 
         return redirect('servers:info', pk=pk)
+
+class deldomain(View):
+    @method_decorator(login_required)
+    def get(self, request, pk):
+        domain = get_object_or_404(EmailDomain, pk=pk)
+
+        domain.delete()
+
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

@@ -187,6 +187,36 @@
             </div>
             {% endif %}
             <!-- /Bans -->
+            <!-- Server domains whitelist -->
+            {% if server.emails_domains.all %}
+            <div class="mdl-grid mdl-cell mdl-cell--4-col mdl-card mdl-shadow--4dp">
+                <table class="mdl-data-table mdl-js-data-table" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th class="mdl-data-table__cell--non-numeric">Domain</th>
+                            {% if perms.groups.delete_ban %}
+                                <th>Delete</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for domain in server.emails_domains.all %}
+                            <tr>
+                                <td class="mdl-data-table__cell--non-numeric">{{ domain.domain }}</td>
+                                {% if perms.groups.delete_ban %}
+                                    <td>
+                                        <a href="{% url 'servers:deldomain' domain.pk %}">
+                                            <i class="material-icons mdl-list__item-icon">delete</i>
+                                        </a>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+            <!-- /Server domains whitelist -->
             <!-- Server grades -->
             {% if ranks.confirmed %}
             <div class="mdl-grid mdl-cell mdl-cell--4-col mdl-card mdl-shadow--4dp">
@@ -285,6 +315,7 @@
     <ul class="mdl-menu mdl-js-menu mdl-menu--top-right" for="add_button">
         <li class="mdl-menu__item show-modal" data-modal="#modal_bans">Bans</li>
         <li class="mdl-menu__item show-modal" data-modal="#modal_group">Ranks</li>
+        <li class="mdl-menu__item show-modal" data-modal="#modal_form" data-title="Add domain" data-type="domain">Domain</li>
         <li class="mdl-menu__item show-modal" data-modal="#modal_moderation">Moderation</li>
     </ul>
 
