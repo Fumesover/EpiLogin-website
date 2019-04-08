@@ -33,6 +33,7 @@ UPDATE_TYPES = (
     ('addgroup', 'ADDGROUP'),
     ('delgroup', 'DELGROUP'),
     ('certify', 'CERTIFY'),
+    ('config', 'CONFIG')
 )
 
 class Update(Model):

@@ -72,8 +72,7 @@ class info(View):
 
             Update(
                 server   = server,
-                type     = '?',
-                ban_type = type[1],
+                type     = 'config',
                 value    = value
             ).save()
         elif type[0] == 'serv':
@@ -92,6 +91,12 @@ class info(View):
 
             server.emails_domains.add(domain)
             server.save()
+
+            Update(
+                server   = server,
+                type     = 'config',
+                value    = value
+            ).save()
 
         return redirect('servers:info', pk=pk)
 
@@ -135,6 +140,12 @@ class deleterank(View):
 
         server_id = rank.server.id
 
+        Update(
+            server   = server_id,
+            type     = 'config',
+            value    = value
+        ).save()
+
         rank.delete()
 
         return redirect('servers:info', pk=server_id)
@@ -171,8 +182,14 @@ class delmod(View):
 
 class deldomain(View):
     @method_decorator(login_required)
-    def get(self, request, pk):
-        domain = get_object_or_404(EmailDomain, pk=pk)
+    def get(self, request, pk, dpk):
+        domain = get_object_or_404(EmailDomain, pk=dpk)
+        server = get_object_or_404(Server, pk=pk)
+
+        Update(
+            server   = server,
+            type     = 'config',
+        ).save()
 
         domain.delete()
 

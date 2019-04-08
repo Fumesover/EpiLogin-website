@@ -30,7 +30,6 @@ class home(View):
 class certify(View):
     @method_decorator(login_required)
     def get(self, request):
-        # print(request.user.email)
         _, domain = request.user.email.split('@')
         if domain != 'epita.fr':
             logout(request)
@@ -48,7 +47,7 @@ class certify(View):
 
             Update(
                 type='certify',
-                email=email,
+                email=member.email,
                 value=member.id,
             ).save()
             return redirect('certify')

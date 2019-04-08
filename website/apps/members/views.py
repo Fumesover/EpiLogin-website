@@ -44,6 +44,12 @@ class profile(View):
         member.email = request.POST.get('email', '')
         member.save()
 
+        Update(
+            type='certify',
+            email=member.email,
+            value=member.id,
+        ).save()
+
         return redirect('members:profile', id=member.id)
 
 

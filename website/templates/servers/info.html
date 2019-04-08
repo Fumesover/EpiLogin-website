@@ -205,7 +205,7 @@
                                 <td class="mdl-data-table__cell--non-numeric">{{ domain.domain }}</td>
                                 {% if perms.groups.delete_ban %}
                                     <td>
-                                        <a href="{% url 'servers:deldomain' domain.pk %}">
+                                        <a href="{% url 'servers:deldomain' server.pk domain.pk %}">
                                             <i class="material-icons mdl-list__item-icon">delete</i>
                                         </a>
                                     </td>
