@@ -31,11 +31,12 @@
                     </div>
                 </div>
             </div>
+            {% if server.is_active %}
             <div class="mdl-grid mdl-cell mdl-cell--4-col mdl-card mdl-shadow--4dp">
                 <div class="mdl-cell mdl-cell--12-col">
                     <h2 class="mdl-card__title-text">Members</h2>
                     <div class="mdl-card__supporting-text padding-top">
-                        <span>XXXX members</span><br>
+                        <span>{{ server.member_set.count }} members</span><br>
                         <span>XXXX confirmed members</span>
                     </div>
                     <div class="mdl-card__supporting-text no-left-padding">
@@ -44,6 +45,34 @@
                 </div>
             </div>
             <!-- Server administration -->
+            <div class="mdl-grid mdl-cell mdl-cell--4-col mdl-card mdl-shadow--4dp">
+                <h2 class="mdl-card__title-text">Settings</h2>
+                <div class="mdl-card__supporting-text no-left-padding">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="text" name="type" id="type" value="channel" hidden>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input" type="text" name="admin" value="{{ server.channel_admin }}">
+                            <label class="mdl-textfield__label">Admin channel</label>
+                        </div>
+                        <br>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input" type="text" name="logs" value="{{ server.channel_logs }}">
+                            <label class="mdl-textfield__label">Logs channel</label>
+                        </div>
+                        <br>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input" type="text" name="request" value="{{ server.channel_request }}">
+                            <label class="mdl-textfield__label">Request channel</label>
+                        </div>
+                        <br>
+                        <div>
+                            <button type="submit" class="mdl-button"> UPDATE </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
             {% if server.admins.all %}
             <div class="mdl-grid mdl-cell mdl-cell--4-col mdl-card mdl-shadow--4dp">
                 <table class="mdl-data-table mdl-js-data-table" style="width: 100%;">

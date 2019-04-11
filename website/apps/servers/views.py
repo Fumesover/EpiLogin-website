@@ -85,6 +85,8 @@ class info(View):
                 server.moderators.add(user.user)
             elif type[1] == 'admin':
                 server.admins.add(user.user)
+
+            server.save()
         elif type[0] == 'domain':
             domain = EmailDomain(domain=value)
             domain.save()
@@ -95,7 +97,17 @@ class info(View):
             Update(
                 server   = server,
                 type     = 'config',
-                value    = value
+            ).save()
+        elif type[0] == 'channel':
+            server.channel_admin   = request.POST.get('admin', 0)
+            server.channel_logs    = request.POST.get('logs', 0)
+            server.channel_request = request.POST.get('request', 0)
+
+            server.save()
+
+            Update(
+                server   = server,
+                type     = 'config',
             ).save()
 
         return redirect('servers:info', pk=pk)

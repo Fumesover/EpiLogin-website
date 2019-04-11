@@ -22,9 +22,9 @@ class RankSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ServerSerializer(serializers.ModelSerializer):
-    rank_set       = RankSerializer(many=True, required=False)
-    ban_set        = BanSerializer(many=True, required=False)
-    emails_domains = EmailDomainSerializer(many=True, required=False)
+    rank_set       = RankSerializer(many=True, required=False, read_only=True)
+    ban_set        = BanSerializer(many=True, required=False, read_only=True)
+    emails_domains = EmailDomainSerializer(many=True, required=False, read_only=True)
 
     class Meta:
         model = Server
