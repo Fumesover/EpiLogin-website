@@ -16,10 +16,13 @@ class deleteban(View):
     @method_decorator(permission_required('groups.delete_ban'))
     def get(self, request, pk):
         ban = get_object_or_404(Ban, pk=pk)
-        server_id = ban.server.pk
+        server = ban.server
+
+        if not request.user.is_superuser and not request.user in server.moderators.all() and not request.user in server.admins.all():
+            raise Http404('Not found')
 
         Update(
-            server=ban.server,
+            server=server,
             type='unban',
             ban_type=ban.type,
             value=ban.value
@@ -27,7 +30,7 @@ class deleteban(View):
 
         ban.delete()
 
-        return redirect('servers:info', pk=server_id)
+        return redirect('servers:info', pk=server.pk)
 
 class deletegroup(View):
     @method_decorator(login_required)

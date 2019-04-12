@@ -17,6 +17,11 @@ class Server(Model):
     admins          = models.ManyToManyField(get_user_model(), blank=True, related_name='admin')
     moderators      = models.ManyToManyField(get_user_model(), blank=True, related_name='moderator')
     emails_domains  = models.ManyToManyField(EmailDomain, blank=True)
+    name            = models.CharField(max_length=64, blank=True)
+    icon_url        = models.CharField(max_length=256, blank=True)
+
+    def __str__(self):
+        return self.name
 
 RANK_TYPES = (
     ('classic', 'CLASSIC'),

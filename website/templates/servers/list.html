@@ -14,7 +14,7 @@
                 <div class="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet mdl-grid mdl-grid--no-spacing">
                     <div class="demo-card mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--12-col-desktop">
                         <a href="{% url 'servers:info' server.pk %}">
-                            <div class="mdl-card__title mdl-color--teal-300" style="background-image:url('https://discordbots.org/servers/images/server_img.svg');">
+                            <div class="mdl-card__title mdl-color--teal-300" style="background-image:url('https://cdn.discordapp.com/icons/{{ server.id }}/{{ server.icon_url }}.png');background-size: 100%;">
                             </div>
                             <div class="mdl-card__actions">
                                 <p class="mdl-button">{{ server }}</p>

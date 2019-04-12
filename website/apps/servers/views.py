@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, Http404
 from social_django.models import UserSocialAuth
 from django.contrib.auth import get_user_model
 import json
@@ -17,9 +17,15 @@ from website.apps.groups.models  import Group, Ban, Update
 
 class info(View):
     @method_decorator(login_required)
-    @method_decorator(staff_member_required)
     def get(self, request, pk):
         server = get_object_or_404(Server, pk=pk)
+
+        print(request.user.is_superuser)
+        print(request.user in server.moderators.all())
+        print(request.user in server.admins.all())
+
+        if not request.user.is_superuser and not request.user in server.moderators.all() and not request.user in server.admins.all():
+            raise Http404('Not found')
 
         bans = {
             'users':  Ban.objects.filter(server=server, type='user'),
@@ -42,9 +48,12 @@ class info(View):
         return render(request, "servers/info.html", context)
 
     @method_decorator(login_required)
-    @method_decorator(staff_member_required)
     def post(self, request, pk):
         server = get_object_or_404(Server, pk=pk)
+
+        if not request.user.is_superuser and not request.user in server.moderators.all() and not request.user in server.admins.all():
+            raise Http404('Not found')
+
         type = request.POST.get('type', '').split('-')
         value = request.POST.get('value', '')
         rank = request.POST.get('rank', '')
@@ -82,9 +91,15 @@ class info(View):
                 return redirect('servers:info', pk=pk)
 
             if type[1] == 'mod':
-                server.moderators.add(user.user)
+                if request.user.is_superuser or request.user in server.admins.all():
+                    server.moderators.add(user.user)
+                else:
+                    raise Http404('Not found')
             elif type[1] == 'admin':
-                server.admins.add(user.user)
+                if request.user.is_superuser:
+                    server.admins.add(user.user)
+                else:
+                    raise Http404('Not found')
 
             server.save()
         elif type[0] == 'domain':
@@ -99,6 +114,9 @@ class info(View):
                 type     = 'config',
             ).save()
         elif type[0] == 'channel':
+            if not request.user.is_superuser or not request.user in server.admins.all():
+                raise Http404('Not found')
+
             server.channel_admin   = request.POST.get('admin', 0)
             server.channel_logs    = request.POST.get('logs', 0)
             server.channel_request = request.POST.get('request', 0)
@@ -114,21 +132,29 @@ class info(View):
 
 class list(View):
     @method_decorator(login_required)
-    @method_decorator(staff_member_required)
     def get(self, request):
+        servers = Server.objects.all()
+
+        if not request.user.is_superuser:
+            for server in servers:
+                if not request.user in server.moderators and not request.user in server.admins:
+                    servers = servers.exclude(pk=server.pk)
+
         context = {
-            'servers': Server.objects.all()
+            'servers': servers
         }
 
         return render(request, "servers/list.html", context)
 
 class ban(View):
     @method_decorator(login_required)
-    @method_decorator(permission_required('groups.add_ban'))
     def post(self, request, pk):
-        data = request.POST
-
         server = get_object_or_404(Server, pk=pk)
+
+        if not request.user.is_superuser and not request.user in server.moderators.all() and not request.user in server.admins.all():
+            raise Http404('Not found')
+
+        data = request.POST
 
         Ban(
             server = server,
@@ -152,6 +178,9 @@ class deleterank(View):
 
         server = rank.server
 
+        if not request.user.is_superuser and not request.user in server.moderators.all() and not request.user in server.admins.all():
+            raise Http404('Not found')
+
         Update(
             server   = server,
             type     = 'config',
@@ -164,6 +193,9 @@ class deleterank(View):
 class deladmin(View):
     @method_decorator(login_required)
     def get(self, request, pk, user):
+        if not request.user.is_superuser:
+            raise Http404('Not found')
+
         server = get_object_or_404(Server, pk=pk)
 
         try:
@@ -181,6 +213,9 @@ class delmod(View):
     def get(self, request, pk, user):
         server = get_object_or_404(Server, pk=pk)
 
+        if not request.user.is_superuser and not request.user in server.admins.all():
+            raise Http404('Not found')
+
         try:
             user = get_user_model().objects.get(pk=user)
         except get_user_model().DoesNotExist:
@@ -196,6 +231,9 @@ class deldomain(View):
     def get(self, request, pk, dpk):
         domain = get_object_or_404(EmailDomain, pk=dpk)
         server = get_object_or_404(Server, pk=pk)
+
+        if not request.user.is_superuser and not request.user in server.admins.all():
+            raise Http404('Not found')
 
         Update(
             server   = server,
