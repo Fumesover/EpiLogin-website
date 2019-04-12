@@ -13,7 +13,7 @@ from website.apps.groups.models  import Group, Ban, Update
 
 class deleteban(View):
     @method_decorator(login_required)
-    @method_decorator(permission_required('groups.delete_ban'))
+    @method_decorator(staff_member_required)
     def get(self, request, pk):
         ban = get_object_or_404(Ban, pk=pk)
         server = ban.server
@@ -34,7 +34,7 @@ class deleteban(View):
 
 class deletegroup(View):
     @method_decorator(login_required)
-    @method_decorator(permission_required('groups.delete_group'))
+    @method_decorator(staff_member_required)
     def get(self, request, pk):
         group = get_object_or_404(Group, pk=pk)
 
@@ -54,5 +54,6 @@ class deletegroup(View):
 
 class updates(View):
     @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def get(self, request):
         return redirect('')

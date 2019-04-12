@@ -15,6 +15,7 @@ from website.apps.groups.models  import Group, Ban, Update
 
 class list(View):
     @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def get(self, request):
         context = {
             'members': Member.objects.all(),
@@ -39,6 +40,7 @@ class profile(View):
         return render(request, "members/profile.html", context)
 
     @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def post(self, request, id):
         member = get_object_or_404(Member, id=id)
         member.email = request.POST.get('email', '')
@@ -55,7 +57,7 @@ class profile(View):
 
 class addgroup(View):
     @method_decorator(login_required)
-    @method_decorator(permission_required('groups.add_group'))
+    @method_decorator(staff_member_required)
     def post(self, request, id):
         member = get_object_or_404(Member, id=id)
 
@@ -79,6 +81,7 @@ class addgroup(View):
 
 class delete(View):
     @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def get(self, request, id):
         member = get_object_or_404(Member, id=id)
 

@@ -14,6 +14,7 @@ from website.apps.servers.models import Server, EmailDomain
 from website.apps.groups.models  import Group, Ban, Update
 
 class index(View):
+    @method_decorator(staff_member_required)
     def get(self, request):
         return render(request, "users/index.html", {})
 

@@ -17,6 +17,7 @@ from website.apps.groups.models  import Group, Ban, Update
 
 class info(View):
     @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def get(self, request, pk):
         server = get_object_or_404(Server, pk=pk)
 
@@ -48,6 +49,7 @@ class info(View):
         return render(request, "servers/info.html", context)
 
     @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def post(self, request, pk):
         server = get_object_or_404(Server, pk=pk)
 
@@ -132,6 +134,7 @@ class info(View):
 
 class list(View):
     @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def get(self, request):
         servers = Server.objects.all()
 
@@ -148,6 +151,7 @@ class list(View):
 
 class ban(View):
     @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def post(self, request, pk):
         server = get_object_or_404(Server, pk=pk)
 
@@ -173,6 +177,7 @@ class ban(View):
 
 class deleterank(View):
     @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def get(self, request, pk):
         rank = get_object_or_404(Rank, pk=pk)
 
@@ -192,6 +197,7 @@ class deleterank(View):
 
 class deladmin(View):
     @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def get(self, request, pk, user):
         if not request.user.is_superuser:
             raise Http404('Not found')
@@ -210,6 +216,7 @@ class deladmin(View):
 
 class delmod(View):
     @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def get(self, request, pk, user):
         server = get_object_or_404(Server, pk=pk)
 
@@ -228,6 +235,7 @@ class delmod(View):
 
 class deldomain(View):
     @method_decorator(login_required)
+    @method_decorator(staff_member_required)
     def get(self, request, pk, dpk):
         domain = get_object_or_404(EmailDomain, pk=dpk)
         server = get_object_or_404(Server, pk=pk)
