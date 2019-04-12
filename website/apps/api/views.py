@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import viewsets
 from django_filters import rest_framework as filters
 from rest_framework.decorators import action
+from django.shortcuts import get_object_or_404
 
 from .serializers import *
 from website.apps.groups.models import Group, Ban, Update
@@ -35,26 +36,26 @@ class MemberViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ('email', 'servers')
 
-    @action(detail=True, methods=['post'])
-    def certify(self, request, pk=None):
-        email = request.data.get('email')
-
-        if email:
-            member, _ = Member.objects.get_or_create({'pk': pk})
-            member.email = email
-            member.hash = ''
-            member.save()
-            return Response({'status': 'User certified'})
-        else:
-            return Response({'status': 'Invalid request'}, status=400)
+#    @action(detail=True, methods=['post'])
+#    def certify(self, request, pk=None):
+#        email = request.data.get('email')
+#
+#        if email:
+#            member, _ = Member.objects.get_or_create({'pk': pk})
+#            member.email = email
+#            member.hash = ''
+#            member.save()
+#            return Response({'status': 'User certified'})
+#        else:
+#            return Response({'status': 'Invalid request'}, status=400)
 
     @action(detail=True, methods=['post', 'delete'])
     def server(self, request, pk=None):
+        member = get_object_or_404(Member, pk=pk)
+
         server_id = request.data.get('id')
 
-        if server_id and pk:
-            member = Member.objects.get(pk=pk)
-
+        if server_id:
             try:
                 server = Server.objects.get(pk=server_id)
             except Member.DoesNotExist:

@@ -10,7 +10,7 @@ from django.http import HttpResponseForbidden
 import sys
 
 from website.apps.members.models import Member
-from website.apps.servers.models import Server
+from website.apps.servers.models import Server, EmailDomain
 from website.apps.groups.models  import Group, Ban, Update
 
 class index(View):
@@ -31,19 +31,25 @@ class certify(View):
     @method_decorator(login_required)
     def get(self, request):
         _, domain = request.user.email.split('@')
-        if domain != 'epita.fr':
+
+        if not EmailDomain.objects.filter(domain=domain).first():
             logout(request)
             return redirect('/login/?next=/certify/?token=' + request.GET['token'])
 
-        if 'token' in request.GET:
+        if 'token' in request.GET and request.GET['token']:
             try:
                 member = Member.objects.get(hash=request.GET['token'])
             except Member.DoesNotExist:
-                return None # TODO: HANDLE ERROR
+                return None
 
             member.hash = ''
             member.email = request.user.email
             member.save()
+
+            Group.objects.get_or_create(
+                group='@' + domain,
+                email=request.user.email
+            )
 
             Update(
                 type='certify',

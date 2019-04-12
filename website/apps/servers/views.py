@@ -150,17 +150,16 @@ class deleterank(View):
     def get(self, request, pk):
         rank = get_object_or_404(Rank, pk=pk)
 
-        server_id = rank.server.id
+        server = rank.server
 
         Update(
-            server   = server_id,
+            server   = server,
             type     = 'config',
-            value    = value
         ).save()
 
         rank.delete()
 
-        return redirect('servers:info', pk=server_id)
+        return redirect('servers:info', pk=server.id)
 
 class deladmin(View):
     @method_decorator(login_required)
