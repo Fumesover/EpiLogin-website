@@ -34,7 +34,7 @@ class MemberViewSet(viewsets.ModelViewSet):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('email', 'servers')
+    filterset_fields = ('email', 'servers', 'name')
 
 #    @action(detail=True, methods=['post'])
 #    def certify(self, request, pk=None):
@@ -64,10 +64,10 @@ class MemberViewSet(viewsets.ModelViewSet):
             if request.method == 'POST':
                 member.servers.add(server)
                 member.save()
-                return Response({'status': 'User added'})
+                return Response({'status': 'Server added'})
             elif request.method == 'DELETE':
                 member.servers.remove(server)
                 member.save()
-                return Response({'status': 'User removed'})
+                return Response({'status': 'Server removed'})
         else:
             return Response({'status': 'Invalid request'}, status=400)
