@@ -3,6 +3,8 @@ html {
     --color-light: #eee;
     --color-dark: #666;
     --color-very-dark: #222;
+    --color-red: #D8000C;
+    --color-very-red: #FFD2D2;
 
     background-color: var(--color-very-dark);
     background-size: auto 600px;
@@ -33,6 +35,27 @@ html {
     -moz-transition: color .2s ease-out, background 0.2s ease-in;
     -webkit-transition: color .2s ease-out, background 0.2s ease-in;
     transition: color .2s ease-out, background 0.2s ease-in;
+}
+
+.errors {
+    font-size: 12px;
+    display: inline-block;
+    padding: 5px 0px 0px 0px;
+    width: 100%;
+    text-decoration: none;
+    font-family: 'Source Code Pro', monospace;
+
+    background-color: var(--color-red);
+    color: var(--color-very-red);
+    -o-transition: color .2s ease-out, background 0.2s ease-in;
+    -ms-transition: color .2s ease-out, background 0.2s ease-in;
+    -moz-transition: color .2s ease-out, background 0.2s ease-in;
+    -webkit-transition: color .2s ease-out, background 0.2s ease-in;
+    transition: color .2s ease-out, background 0.2s ease-in;
+}
+
+.errors p {
+    color: var(--color-very-red);
 }
 
 .confirm {

@@ -16,17 +16,13 @@ from website.apps.groups.models  import Group, Ban, Update
 class index(View):
     @method_decorator(staff_member_required)
     def get(self, request):
-        return render(request, "users/index.html", {})
+        return render(request, "users/index.html")
 
 class home(View):
     @method_decorator(login_required)
     @method_decorator(staff_member_required)
     def get(self, request):
-        context = {
-            'user': request.user,
-        }
-
-        return render(request, "users/home.html", context)
+        return render(request, "users/home.html")
 
 class certify(View):
     @method_decorator(login_required)
@@ -35,13 +31,19 @@ class certify(View):
 
         if not EmailDomain.objects.filter(domain=domain).first():
             logout(request)
-            return redirect('/login/?next=/certify/?token=' + request.GET['token'])
+            return redirect('/login/?next=/certify/?token={}&error={}'.format(
+                                request.GET['token'],
+                                "Nom de domaine inconnu: \"{}\"".format(domain)
+                            ))
 
         if 'token' in request.GET and request.GET['token']:
             try:
                 member = Member.objects.get(hash=request.GET['token'])
             except Member.DoesNotExist:
-                return None
+                return redirect('/login/?next=/certify/?token={}&error={}'.format(
+                                request.GET['token'],
+                                    "Token inconnu (avez vous deja verifie votre compte ?)"
+                                ))
 
             member.hash = ''
             member.email = request.user.email
