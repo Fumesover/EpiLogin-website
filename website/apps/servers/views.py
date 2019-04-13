@@ -251,3 +251,29 @@ class deldomain(View):
         domain.delete()
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+class activate(View):
+    @method_decorator(login_required)
+    @method_decorator(staff_member_required)
+    def get(self, request, pk):
+        if not request.user.is_superuser:
+            raise Http404('Nope')
+
+        server = get_object_or_404(Server, pk=pk)
+        server.is_active = True
+        server.save()
+
+        return redirect('servers:info', pk=pk)
+
+class deactivate(View):
+    @method_decorator(login_required)
+    @method_decorator(staff_member_required)
+    def get(self, request, pk):
+        if not request.user.is_superuser:
+            raise Http404('Nope')
+
+        server = get_object_or_404(Server, pk=pk)
+        server.is_active = False
+        server.save()
+
+        return redirect('servers:info', pk=pk)

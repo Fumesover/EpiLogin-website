@@ -17,9 +17,16 @@ class list(View):
     @method_decorator(login_required)
     @method_decorator(staff_member_required)
     def get(self, request):
-        context = {
-            'members': Member.objects.all(),
-        }
+        if 'server' in request.GET and request.GET['server']:
+            server = get_object_or_404(Server, pk=request.GET['server'])
+
+            context = {
+                'members': server.member_set.all(),
+            }
+        else:
+            context = {
+                'members': Member.objects.all(),
+            }
 
         return render(request, 'members/list.html', context)
 

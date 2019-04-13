@@ -22,11 +22,11 @@
                         <span>{{ server.id }}</span>
                     </div>
                     <div class="mdl-card__supporting-text no-left-padding">
-                        <label for="switch1" class="mdl-switch mdl-js-switch">
+                        <label for="switch_activate" class="mdl-switch mdl-js-switch">
                             {% if user.is_superuser %}
-                                <input type="checkbox" id="switch1" class="mdl-switch__input" {% if server.is_active%}checked{% endif %}>
+                                <input type="checkbox" id="switch_activate" class="mdl-switch__input" {% if server.is_active%}checked{% endif %}>
                             {% else %}
-                                <input type="checkbox" id="switch1" class="mdl-switch__input" {% if server.is_active%}checked{% endif %} disabled>
+                                <input type="checkbox" id="switch_activate" class="mdl-switch__input" {% if server.is_active%}checked{% endif %} disabled>
                             {% endif %}
                             <span class="mdl-switch__label">Activate server</span>
                         </label>
@@ -41,7 +41,7 @@
                         <span>XXXX confirmed members</span>
                     </div>
                     <div class="mdl-card__supporting-text no-left-padding">
-                        <a href="#" class="mdl-button mdl-button--raised">Show List</a>
+                        <a href="{% url 'members:list' %}?server={{ server.id }}" class="mdl-button mdl-button--raised">Show List</a>
                     </div>
                 </div>
             </div>
@@ -456,6 +456,23 @@
                     dialog.close();
                 });
             });
+            {% if user.is_superuser %}
+                document.querySelector('#switch_activate').addEventListener('change', (event) => {
+                    if (event.target.checked) {
+                        if (confirm('Activate server ?')) {
+                            document.location = "activate/";
+                        } else {
+                            event.target.checked = false;
+                        }
+                    } else {
+                        if (confirm('Deactivate server ?')) {
+                            document.location = "deactivate/";
+                        } else {
+                            event.target.checked = true;
+                        }
+                    }
+                });
+            {% endif %}
         </script>
-    {% endif %}
+        {% endif %}
 {% endblock %}
