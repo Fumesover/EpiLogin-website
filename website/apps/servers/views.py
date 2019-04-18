@@ -21,10 +21,6 @@ class info(View):
     def get(self, request, pk):
         server = get_object_or_404(Server, pk=pk)
 
-        print(request.user.is_superuser)
-        print(request.user in server.moderators.all())
-        print(request.user in server.admins.all())
-
         if not request.user.is_superuser and not request.user in server.moderators.all() and not request.user in server.admins.all():
             raise Http404('Not found')
 
@@ -85,7 +81,9 @@ class info(View):
             Update(
                 server   = server,
                 type     = 'config',
-                value    = value,
+                value    = 'addrank-' + type[1],
+                ban_type = rank,
+                email    = value,
                 author   = request.user,
             ).save()
         elif type[0] == 'serv':
@@ -116,14 +114,14 @@ class info(View):
             Update(
                 server   = server,
                 type     = 'config',
+                value    = 'adddomain',
+                ban_type = value,
                 author   = request.user,
             ).save()
         elif type[0] == 'channel':
-            print(3, not request.user.is_superuser)
-            print(not request.user in server.admins.all())
             if not (request.user.is_superuser or request.user in server.admins.all()):
                 raise Http404('Not found')
-            print(4)
+
             server.channel_admin   = request.POST.get('admin', 0)
             server.channel_logs    = request.POST.get('logs', 0)
             server.channel_request = request.POST.get('request', 0)
@@ -133,6 +131,7 @@ class info(View):
             Update(
                 server   = server,
                 type     = 'config',
+                value    = 'channels',
                 author   = request.user,
             ).save()
 
@@ -196,6 +195,9 @@ class deleterank(View):
         Update(
             server   = server,
             type     = 'config',
+            value    = 'delrank-' + rank.type,
+            ban_type = rank.name,
+            email    = rank.discord_id,
             author   = request.user,
         ).save()
 
@@ -254,6 +256,8 @@ class deldomain(View):
         Update(
             server   = server,
             type     = 'config',
+            email    = domain.domain,
+            value    = 'deldomain',
             author   = request.user,
         ).save()
 
@@ -272,6 +276,13 @@ class activate(View):
         server.is_active = True
         server.save()
 
+        Update(
+            server   = server,
+            type     = 'config',
+            value    = 'activate',
+            author   = request.user,
+        ).save()
+
         return redirect('servers:info', pk=pk)
 
 class deactivate(View):
@@ -284,5 +295,12 @@ class deactivate(View):
         server = get_object_or_404(Server, pk=pk)
         server.is_active = False
         server.save()
+
+        Update(
+            server   = server,
+            type     = 'config',
+            value    = 'deactivate',
+            author   = request.user,
+        ).save()
 
         return redirect('servers:info', pk=pk)
