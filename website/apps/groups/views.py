@@ -22,10 +22,11 @@ class deleteban(View):
             raise Http404('Not found')
 
         Update(
-            server=server,
-            type='unban',
-            ban_type=ban.type,
-            value=ban.value
+            server   = server,
+            type     = 'unban',
+            ban_type = ban.type,
+            value    = ban.value,
+            author   = request.user,
         ).save()
 
         ban.delete()
@@ -43,9 +44,10 @@ class deletegroup(View):
         member = get_object_or_404(Member, email=email)
 
         Update(
-            type='delgroup',
-            email=group.email,
-            value=group.group,
+            type    = 'delgroup',
+            email   = group.email,
+            value   = group.group,
+            author  = request.user,
         ).save()
 
         group.delete()

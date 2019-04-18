@@ -71,7 +71,8 @@ class info(View):
                 server   = server,
                 type     = 'ban',
                 ban_type = type[1],
-                value    = value
+                value    = value,
+                author   = request.user,
             ).save()
         elif type[0] == 'role':
             Rank(
@@ -84,7 +85,8 @@ class info(View):
             Update(
                 server   = server,
                 type     = 'config',
-                value    = value
+                value    = value,
+                author   = request.user,
             ).save()
         elif type[0] == 'serv':
             try:
@@ -114,6 +116,7 @@ class info(View):
             Update(
                 server   = server,
                 type     = 'config',
+                author   = request.user,
             ).save()
         elif type[0] == 'channel':
             print(3, not request.user.is_superuser)
@@ -130,6 +133,7 @@ class info(View):
             Update(
                 server   = server,
                 type     = 'config',
+                author   = request.user,
             ).save()
 
         return redirect('servers:info', pk=pk)
@@ -172,7 +176,8 @@ class ban(View):
             server   = server,
             type     = 'ban',
             ban_type = data['type'],
-            value    = data['value']
+            value    = data['value'],
+            author   = request.user,
         ).save()
 
         return redirect('servers:info', pk=pk)
@@ -191,6 +196,7 @@ class deleterank(View):
         Update(
             server   = server,
             type     = 'config',
+            author   = request.user,
         ).save()
 
         rank.delete()
@@ -248,6 +254,7 @@ class deldomain(View):
         Update(
             server   = server,
             type     = 'config',
+            author   = request.user,
         ).save()
 
         domain.delete()

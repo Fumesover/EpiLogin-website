@@ -62,13 +62,13 @@ class profile(View):
         member.save()
 
         Update(
-            type='certify',
-            email=member.email,
-            value=member.id,
+            type     = 'certify',
+            email    = member.email,
+            value    = member.id,
+            author   = request.user,
         ).save()
 
         return redirect('members:profile', id=member.id)
-
 
 class addgroup(View):
     @method_decorator(login_required)
@@ -89,7 +89,8 @@ class addgroup(View):
         Update(
             type     = 'addgroup',
             email    = member.email,
-            value    = data['group']
+            value    = data['group'],
+            author   = request.user,
         ).save()
 
         return redirect('members:profile', id=id)

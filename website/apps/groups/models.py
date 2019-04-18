@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Model
+from django.contrib.auth import get_user_model
 
 from website.apps.servers.models import Server
 
@@ -51,5 +52,6 @@ class Update(Model):
         choices=BAN_TYPES,
         max_length=20
     )
-    email = models.CharField(max_length=64, default='')
-    value = models.CharField(max_length=64, default='')
+    email  = models.CharField(max_length=64, default='')
+    value  = models.CharField(max_length=64, default='')
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True)
