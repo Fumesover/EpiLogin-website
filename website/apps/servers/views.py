@@ -53,12 +53,8 @@ class info(View):
     def post(self, request, pk):
         server = get_object_or_404(Server, pk=pk)
 
-        print(1)
-
         if (not request.user.is_superuser) and (not request.user in server.moderators.all()) and (not request.user in server.admins.all()):
             raise Http404('Not found')
-
-        print(2)
 
         type = request.POST.get('type', '').split('-')
         value = request.POST.get('value', '')

@@ -19,14 +19,22 @@ class list(View):
     def get(self, request):
         if 'server' in request.GET and request.GET['server']:
             server = get_object_or_404(Server, pk=request.GET['server'])
-
-            context = {
-                'members': server.member_set.all(),
-            }
+            members = server.member_set
         else:
-            context = {
-                'members': Member.objects.all(),
-            }
+            server = None
+            members = Member.objects
+
+        if 'name' in request.GET and request.GET['name']:
+            members = members.filter(name__icontains=request.GET['name'])
+        if 'id' in request.GET and request.GET['id']:
+            members = members.filter(id__icontains=request.GET['id'])
+        if 'email' in request.GET and request.GET['email']:
+            members = members.filter(email__icontains=request.GET['email'])
+
+        context = {
+            'members': members.all(),
+            'server': server,
+        }
 
         return render(request, 'members/list.html', context)
 
