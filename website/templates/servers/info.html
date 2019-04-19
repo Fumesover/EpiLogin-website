@@ -147,12 +147,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for user in bans.users %}
+                            {% for member in bans.users %}
                                 <tr>
-                                    <td class="mdl-data-table__cell--non-numeric">{{ user.value }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ member.value }}</td>
                                     {% if user.is_superuser or user in server.admins or user in server.moderators %}
                                         <td>
-                                            <a href="{% url 'groups:deleteban' user.pk %}">
+                                            <a href="{% url 'groups:deleteban' member.pk %}">
                                                 <i class="material-icons mdl-list__item-icon">delete</i>
                                             </a>
                                         </td>
