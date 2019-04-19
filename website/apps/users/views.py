@@ -7,7 +7,9 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.http import HttpResponseForbidden
+import sys
 
+from website.apps.members.models import Member
 from website.apps.servers.models import Server
 from website.apps.groups.models  import Group, Ban, Update
 
@@ -19,12 +21,8 @@ class home(View):
     @method_decorator(login_required)
     @method_decorator(staff_member_required)
     def get(self, request):
-        if not request.user.social_auth.filter(provider='discord').exists():
-            return redirect('social:begin', 'discord')
-
         context = {
             'user': request.user,
-            'user_extra': request.user.social_auth.get(provider="discord").extra_data,
         }
 
         return render(request, "users/home.html", context)
@@ -32,16 +30,26 @@ class home(View):
 class certify(View):
     @method_decorator(login_required)
     def get(self, request):
-        login,domain = request.user.email.split('@')
+        print(request.user.email)
+        login, domain = request.user.email.split('@')
         if domain != 'epita.fr':
             logout(request)
             return redirect('/login/?next=/certify/?token=' + request.GET['token'])
 
         if 'token' in request.GET:
+            try:
+                member = Member.objects.get(hash=request.GET['token'])
+            except Member.DoesNotExist:
+                return None # TODO: HANDLE ERROR
+
+            member.hash = ''
+            member.login = login
+            member.save()
+
             Update(
                 type='certify',
-                value=request.GET['token'],
                 login=login,
+                value=member.id,
             ).save()
             return redirect('certify')
 

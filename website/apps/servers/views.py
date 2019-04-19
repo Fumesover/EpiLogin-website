@@ -7,40 +7,158 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
+from social_django.models import UserSocialAuth
+from django.contrib.auth import get_user_model
 import json
 
-from website.apps.servers.models import Server
+from website.apps.servers.models import Server, Rank
 from website.apps.members.models import Member
 from website.apps.groups.models  import Group, Ban, Update
 
 class info(View):
     @method_decorator(login_required)
     @method_decorator(staff_member_required)
-    def get(self, request, server_id):
-        server = get_object_or_404(Server, server_id=server_id)
+    def get(self, request, pk):
+        server = get_object_or_404(Server, pk=pk)
+
         bans = {
-            'users': Ban.objects.filter(server=server, type='user'),
+            'users':  Ban.objects.filter(server=server, type='user'),
             'groups': Ban.objects.filter(server=server, type='group'),
             'logins': Ban.objects.filter(server=server, type='login'),
         }
 
+        ranks = {
+            'confirmed': Rank.objects.filter(server=server, type='confirmed'),
+            'classic': Rank.objects.filter(server=server, type='classic'),
+            'banned': Rank.objects.filter(server=server, type='banned'),
+        }
+
         context = {
-            'user': request.user,
-            'user_extra': request.user.social_auth.get(provider="discord").extra_data,
             'server': server,
             'bans': bans,
+            'ranks': ranks,
         }
 
         return render(request, "servers/info.html", context)
+
+    @method_decorator(login_required)
+    @method_decorator(staff_member_required)
+    def post(self, request, pk):
+        server = get_object_or_404(Server, pk=pk)
+        type = request.POST.get('type', '').split('-')
+        value = request.POST.get('value', '')
+        rank = request.POST.get('rank', '')
+
+        if type[0] == 'ban':
+            Ban(
+                server = server,
+                type   = type[1],
+                value  = value
+            ).save()
+
+            Update(
+                server   = server,
+                type     = 'ban',
+                ban_type = type[1],
+                value    = value
+            ).save()
+        elif type[0] == 'role':
+            Rank(
+                server     = server,
+                type       = type[1],
+                name       = rank,
+                discord_id = value
+            ).save()
+
+            Update(
+                server   = server,
+                type     = '?',
+                ban_type = type[1],
+                value    = value
+            ).save()
+        elif type[0] == 'serv':
+            try:
+                user = UserSocialAuth.objects.get(provider='discord', uid=value)
+            except UserSocialAuth.DoesNotExist:
+                return redirect('servers:info', pk=pk)
+
+            if type[1] == 'mod':
+                server.moderators.add(user.user)
+            elif type[1] == 'admin':
+                server.admins.add(user.user)
+
+        return redirect('servers:info', pk=pk)
 
 class list(View):
     @method_decorator(login_required)
     @method_decorator(staff_member_required)
     def get(self, request):
         context = {
-            'user': request.user,
-            'user_extra': request.user.social_auth.get(provider="discord").extra_data,
             'servers': Server.objects.all()
         }
 
         return render(request, "servers/list.html", context)
+
+class ban(View):
+    @method_decorator(login_required)
+    @method_decorator(permission_required('groups.add_ban'))
+    def post(self, request, pk):
+        data = request.POST
+
+        server = get_object_or_404(Server, pk=pk)
+
+        Ban(
+            server = server,
+            type   = data['type'],
+            value  = data['value']
+        ).save()
+
+        Update(
+            server   = server,
+            type     = 'ban',
+            ban_type = data['type'],
+            value    = data['value']
+        ).save()
+
+        return redirect('servers:info', pk=pk)
+
+class deleterank(View):
+    @method_decorator(login_required)
+    def get(self, request, pk):
+        rank = get_object_or_404(Rank, pk=pk)
+
+        server_id = rank.server.id
+
+        rank.delete()
+
+        return redirect('servers:info', pk=server_id)
+
+class deladmin(View):
+    @method_decorator(login_required)
+    def get(self, request, pk, user):
+        server = get_object_or_404(Server, pk=pk)
+
+        try:
+            user = get_user_model().objects.get(pk=user)
+        except get_user_model().DoesNotExist:
+            return redirect('servers:info', pk=pk)
+
+        server.admins.remove(user)
+        server.save()
+
+        return redirect('servers:info', pk=pk)
+
+class delmod(View):
+    @method_decorator(login_required)
+    def get(self, request, pk, user):
+        server = get_object_or_404(Server, pk=pk)
+
+        try:
+            user = get_user_model().objects.get(pk=user)
+        except get_user_model().DoesNotExist:
+            return redirect('servers:info', pk=pk)
+
+        server.moderators.remove(user)
+        server.save()
+
+        return redirect('servers:info', pk=pk)

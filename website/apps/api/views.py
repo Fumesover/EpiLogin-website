@@ -7,11 +7,13 @@ from rest_framework.decorators import action
 from .serializers import *
 from website.apps.groups.models import Group, Ban, Update
 from website.apps.members.models import Member
-from website.apps.servers.models import Server
+from website.apps.servers.models import Server, Rank
 
 class UpdateViewSet(viewsets.ModelViewSet):
     queryset = Update.objects.all()
     serializer_class = UpdateSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('type', 'ban_type', 'server', 'login')
 
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
@@ -19,6 +21,9 @@ class GroupViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ('login', 'group')
 
+class RankViewSet(viewsets.ModelViewSet):
+    queryset = Rank.objects.all()
+    serializer_class = RankSerializer
 
 class ServerViewSet(viewsets.ModelViewSet):
     queryset = Server.objects.all()
@@ -48,20 +53,20 @@ class MemberViewSet(viewsets.ModelViewSet):
         server_id = request.data.get('id')
 
         if server_id and pk:
-            member = Server.objects.get(pk=pk)
+            member = Member.objects.get(pk=pk)
 
             try:
-                member = Member.objects.get(pk=member_id)
+                server = Server.objects.get(pk=server_id)
             except Member.DoesNotExist:
                 raise NotFound('Member not found.', code=405)
 
             if request.method == 'POST':
-                server.members.add(member)
-                server.save()
+                member.servers.add(server)
+                member.save()
                 return Response({'status': 'User added'})
             elif request.method == 'DELETE':
-                server.members.remove(member)
-                server.save()
+                member.servers.remove(server)
+                member.save()
                 return Response({'status': 'User removed'})
         else:
             return Response({'status': 'Invalid request'}, status=400)

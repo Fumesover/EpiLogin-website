@@ -25,6 +25,7 @@ DEFAULT_APPS = [
 THIRD_PARTY_APPS = [
     'social_django',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_filters',
 ]
 

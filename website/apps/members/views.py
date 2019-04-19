@@ -13,22 +13,41 @@ from website.apps.members.models import Member
 from website.apps.servers.models import Server
 from website.apps.groups.models  import Group, Ban, Update
 
+class list(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        context = {
+            'members': Member.objects.all(),
+        }
+
+        return render(request, 'members/list.html', context)
+
 class profile(View):
     @method_decorator(login_required)
     @method_decorator(staff_member_required)
     def get(self, request, id):
         member  = get_object_or_404(Member, id=id)
-        servers = Server.objects.filter(members__in=[member])
 
         context = {
-            'user': request.user,
-            'user_extra': request.user.social_auth.get(provider="discord").extra_data,
-            'profile': member,
-            'servers': servers,
-            'groups': Group.objects.filter(login=member.login),
+            'member': member,
+            'member_groups': Group.objects.filter(login=member.login),
         }
 
-        return render(request, "users/profile.html", context)
+        if member.login:
+            context['groups'] = Group.objects.filter(login=member.login)
+
+        return render(request, "members/profile.html", context)
+
+    @method_decorator(login_required)
+    def post(self, request, id):
+        member = get_object_or_404(Member, id=id)
+        print(request.POST)
+        member.login = request.POST.get('login', '')
+        print(member.login)
+        member.save()
+
+        return redirect('members:profile', id=member.id)
+
 
 class addgroup(View):
     @method_decorator(login_required)
@@ -43,13 +62,22 @@ class addgroup(View):
 
         Group(
             login=member.login,
-            group=data['value'],
+            group=data['group'],
         ).save()
 
         Update(
             type     = 'addgroup',
             login    = member.login,
-            value    = data['value']
+            value    = data['group']
         ).save()
 
         return redirect('members:profile', id=id)
+
+class delete(View):
+    @method_decorator(login_required)
+    def get(self, request, id):
+        member = get_object_or_404(Member, id=id)
+
+        member.delete()
+
+        return redirect('members:list')

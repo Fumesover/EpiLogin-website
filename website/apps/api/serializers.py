@@ -22,7 +22,7 @@ class ServerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Server
-        fields = ('__all__')
+        fields = '__all__'
 
 class UpdateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,7 +32,7 @@ class UpdateSerializer(serializers.ModelSerializer):
 class MemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = Member
-        fields = ('id', 'login', 'servers')
+        fields = '__all__'
 
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:

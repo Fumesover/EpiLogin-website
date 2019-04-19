@@ -10,6 +10,7 @@ router.register(r'updates', views.UpdateViewSet)
 router.register(r'members', views.MemberViewSet)
 router.register(r'servers', views.ServerViewSet)
 router.register(r'groups', views.GroupViewSet)
+router.register(r'ranks', views.RankViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
