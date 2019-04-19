@@ -58,7 +58,7 @@ class certify(View):
                 type    = 'certify',
                 email   = member.email,
                 value   = member.id,
-                author  = request.user
+                author  = member.id,
             ).save()
             return redirect('certify')
 

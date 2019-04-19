@@ -65,7 +65,7 @@ class profile(View):
             type     = 'certify',
             email    = member.email,
             value    = member.id,
-            author   = request.user,
+            author   = int(request.user.social_auth.get(provider='discord').uid),
         ).save()
 
         return redirect('members:profile', id=member.id)
@@ -90,7 +90,7 @@ class addgroup(View):
             type     = 'addgroup',
             email    = member.email,
             value    = data['group'],
-            author   = request.user,
+            author   = int(request.user.social_auth.get(provider='discord').uid),
         ).save()
 
         return redirect('members:profile', id=id)
@@ -102,5 +102,7 @@ class delete(View):
         member = get_object_or_404(Member, id=id)
 
         member.delete()
+
+        # TODO
 
         return redirect('members:list')

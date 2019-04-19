@@ -26,7 +26,7 @@ class deleteban(View):
             type     = 'unban',
             ban_type = ban.type,
             value    = ban.value,
-            author   = request.user,
+            author   = int(request.user.social_auth.get(provider='discord').uid),
         ).save()
 
         ban.delete()
@@ -47,15 +47,9 @@ class deletegroup(View):
             type    = 'delgroup',
             email   = group.email,
             value   = group.group,
-            author  = request.user,
+            author  = int(request.user.social_auth.get(provider='discord').uid),
         ).save()
 
         group.delete()
 
         return redirect('members:profile', id=member.id)
-
-class updates(View):
-    @method_decorator(login_required)
-    @method_decorator(staff_member_required)
-    def get(self, request):
-        return redirect('')

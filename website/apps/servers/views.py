@@ -68,7 +68,7 @@ class info(View):
                 type     = 'ban',
                 ban_type = type[1],
                 value    = value,
-                author   = request.user,
+                author   = int(request.user.social_auth.get(provider='discord').uid),
             ).save()
         elif type[0] == 'role':
             Rank(
@@ -84,7 +84,7 @@ class info(View):
                 value    = 'addrank-' + type[1],
                 ban_type = rank,
                 email    = value,
-                author   = request.user,
+                author   = int(request.user.social_auth.get(provider='discord').uid),
             ).save()
         elif type[0] == 'serv':
             try:
@@ -116,7 +116,7 @@ class info(View):
                 type     = 'config',
                 value    = 'adddomain',
                 ban_type = value,
-                author   = request.user,
+                author   = int(request.user.social_auth.get(provider='discord').uid),
             ).save()
         elif type[0] == 'channel':
             if not (request.user.is_superuser or request.user in server.admins.all()):
@@ -132,7 +132,7 @@ class info(View):
                 server   = server,
                 type     = 'config',
                 value    = 'channels',
-                author   = request.user,
+                author   = int(request.user.social_auth.get(provider='discord').uid),
             ).save()
 
         return redirect('servers:info', pk=pk)
@@ -176,7 +176,7 @@ class ban(View):
             type     = 'ban',
             ban_type = data['type'],
             value    = data['value'],
-            author   = request.user,
+            author   = int(request.user.social_auth.get(provider='discord').uid),
         ).save()
 
         return redirect('servers:info', pk=pk)
@@ -198,7 +198,7 @@ class deleterank(View):
             value    = 'delrank-' + rank.type,
             ban_type = rank.name,
             email    = rank.discord_id,
-            author   = request.user,
+            author   = int(request.user.social_auth.get(provider='discord').uid),
         ).save()
 
         rank.delete()
@@ -258,7 +258,7 @@ class deldomain(View):
             type     = 'config',
             email    = domain.domain,
             value    = 'deldomain',
-            author   = request.user,
+            author   = int(request.user.social_auth.get(provider='discord').uid),
         ).save()
 
         domain.delete()
@@ -280,7 +280,7 @@ class activate(View):
             server   = server,
             type     = 'config',
             value    = 'activate',
-            author   = request.user,
+            author   = int(request.user.social_auth.get(provider='discord').uid),
         ).save()
 
         return redirect('servers:info', pk=pk)
@@ -300,7 +300,7 @@ class deactivate(View):
             server   = server,
             type     = 'config',
             value    = 'deactivate',
-            author   = request.user,
+            author   = int(request.user.social_auth.get(provider='discord').uid),
         ).save()
 
         return redirect('servers:info', pk=pk)
