@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <header class="mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
+        <div class="mdl-layout__header-row">
+            <span class="mdl-layout-title">{{ member.name }}'s profile</span>
+        </div>
+    </header>
+
+    <main class="mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-grid">
+            <div class="mdl-grid mdl-cell mdl-cell--6-col mdl-cell--6-col-tablet mdl-shadow--4dp">
+                <div class="mdl-cell mdl-cell--4-col mdl-cell--hide-phone mdl-cell--3-col-tablet">
+                    <img src="https://cdn.discordapp.com/avatars/329630124070666240/1f44edb172b87085c3ecfd151c021b40?size=256" width="100%">
+                </div>
+                <div class="mdl-cell mdl-cell--8-col mdl-cell--3-col-tablet">
+                    <form id="form_update" method="post">
+                        {% csrf_token %}
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input" type="text" id="sample3" name="login" value="{{ member.login }}">
+                            <label class="mdl-textfield__label" for="sample3">User login</label>
+                        </div>
+                        <br>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input" type="text" id="sample3" value="{{ member.id }}" readonly>
+                            <label class="mdl-textfield__label" for="sample3">Discord ID</label>
+                        </div>
+                        <br>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input" type="text" id="sample3" value="{{ member.name }}" readonly>
+                            <label class="mdl-textfield__label" for="sample3">Discord username</label>
+                        </div>
+                        <br>
+                        <div>
+                            <button type="submit" class="mdl-button"> UPDATE </button>
+                            <a href="{% url 'members:delete' member.pk %}" class="mdl-button"> DELETE </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% if member.servers.all %}
+                <div class="mdl-cell demo-card mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4">
+                    <table class="mdl-data-table mdl-js-data-table" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Server</th>
+                                <th>Show</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for server in member.servers.all %}
+                                <tr>
+                                    <td>{{ server.name }}</td>
+                                    <td>
+                                        <a href="{% url 'servers:info' server.pk %}" class="mdl-button mdl-js-button mdl-button--raised mdl-button--primary">
+                                            Show server
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+
+            {% if member.login and member_groups %}
+                <div class="mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--4-col-desktop mdl-card mdl-shadow--2dp">
+                    <table class="mdl-data-table mdl-js-data-table" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Group</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for group in member_groups %}
+                                <tr>
+                                    <td>{{ group.group }}</td>
+                                    <td>
+                                        <a href="{% url 'groups:deletegroup' group.pk %}">
+                                            <i class="material-icons mdl-list__item-icon">delete</i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+    {% if member.login %}
+        <button id="add_button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored show-modal" data-modal="#modal_form">
+            <i class="material-icons">add</i>
+        </button>
+
+        <dialog class="mdl-dialog" id="modal_form">
+            <div class="mdl-dialog__content">
+                <h5 id="form_title"> Adding a group to user ? </h5>
+                <form id="form_action" method="post" action="{% url 'members:addgroup' member.pk %}">
+                    {% csrf_token %}
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" id="group" name="group">
+                        <label class="mdl-textfield__label" for="group">Group</label>
+                    </div>
+                </form>
+            </div>
+            <div class="mdl-dialog__actions">
+                <button type="submit" class="mdl-button" form="form_action">Add</button>
+                <button type="button" class="mdl-button close">Close</button>
+            </div>
+        </dialog>
+    {% endif %}
+{% endblock %}
+
+{% block javascriptend %}
+    <script>
+        var dialogs = document.querySelectorAll('dialog');
+        var buttons = document.querySelectorAll('.show-modal');
+        dialogs.forEach(function (dialog) {
+            if (! dialog.showModal) {
+                dialogPolyfill.registerDialog(dialog);
+            }
+        });
+        buttons.forEach(function(button) {
+            var dialog_name = button.dataset['modal'];
+            if (!dialog_name) return;
+
+            var dialog = document.querySelector(dialog_name);
+            button.addEventListener('click', function() {
+                dialog.showModal();
+            });
+            dialog.querySelector('.close').addEventListener('click', function() {
+                dialog.querySelector('#group').value = "";
+                dialog.close();
+            });
+        });
+    </script>
+{% endblock %}

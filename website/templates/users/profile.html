@@ -94,8 +94,8 @@
                         <tbody>
                             {% for server in servers %}
                             <tr>
-                                <td> {{ server.name }} </td>
-                                <td><a href="{% url 'servers:info' server.server_id %}" class="btn btn-primary" role="button">Show server</a></td>
+                                <td> {{ server }} </td>
+                                <td><a href="{% url 'servers:info' server.pk %}" class="btn btn-primary" role="button">Show server</a></td>
                             </tr>
                             {% endfor %}
                         </tbody>
