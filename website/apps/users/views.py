@@ -22,6 +22,9 @@ class home(View):
     @method_decorator(login_required)
     @method_decorator(staff_member_required)
     def get(self, request):
+        if not request.user.social_auth.filter(provider='discord').exists():
+            return redirect('social:begin', 'discord')
+
         return render(request, "users/home.html")
 
 class certify(View):
