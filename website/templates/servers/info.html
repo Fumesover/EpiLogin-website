@@ -2,189 +2,477 @@
 {% load static %}
 
 {% block content %}
-    <ol class="breadcrumb breadcrumb-arrow">
-        <li><a href="{% url 'users:home' %}">Home</a></li>
-        <li><a href="{% url 'servers:list' %}">Servers</a></li>
-        <li><span>{{ server.name }}</span></li>
-    </ol>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{{ server.name }} informations</h3>
+    {{ err }}
+
+    <header class="mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
+        <div class="mdl-layout__header-row">
+            <span class="mdl-layout-title">{{ server }}</span>
+        </div>
+    </header>
+
+    <main class="mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-grid">
+            <div class="mdl-grid mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-card mdl-shadow--4dp">
+                <div class="mdl-cell mdl-cell--4-col mdl-cell--hide-phone mdl-cell--3-col-tablet">
+                    <img class="server-image" src="https://cdn.discordapp.com/icons/{{ server.id }}/{{ server.icon_url }}.png" border="0">
                 </div>
-                <div class="panel-body">
-                    <div style="display: block;max-height: 500px;overflow-y: auto;">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>ID</th>
-                                    <th>Login</th>
-                                    <th>Show</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for member in server.members.all %}
-                                    <tr>
-                                        <td> {{ member.username }} </td>
-                                        <td> {{ member.id }}   </td>
-                                        <td> {{ member.login }} </td>
-                                        <td><a href="{% url 'members:profile' member.id %}" class="btn btn-primary" role="button">View User</a></td>
-                                    <tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                <div class="mdl-cell mdl-cell--8-col mdl-cell--3-col-tablet">
+                    <h2 class="mdl-card__title-text">{{ server }}</h2>
+                    <div class="mdl-card__supporting-text padding-top">
+                        <span>{{ server.id }}</span>
+                    </div>
+                    <div class="mdl-card__supporting-text no-left-padding">
+                        <label for="switch_activate" class="mdl-switch mdl-js-switch">
+                            {% if user.is_superuser %}
+                                <input type="checkbox" id="switch_activate" class="mdl-switch__input" {% if server.is_active%}checked{% endif %}>
+                            {% else %}
+                                <input type="checkbox" id="switch_activate" class="mdl-switch__input" {% if server.is_active%}checked{% endif %} disabled>
+                            {% endif %}
+                            <span class="mdl-switch__label">Activate server</span>
+                        </label>
                     </div>
                 </div>
             </div>
-        </div>
-        {% if perms.groups.view_ban %}
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Banned Users</h4>
-                    {% if perms.groups.add_ban %}
-                    <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#banModal" data-bantype="user">
-                        New
-                    </button>
-                    {% endif %}
-                    <div class="clearfix"></div>
+            <div class="mdl-grid mdl-cell mdl-cell--4-col mdl-card mdl-shadow--4dp">
+                <div class="mdl-cell mdl-cell--12-col">
+                    <h2 class="mdl-card__title-text">Members</h2>
+                    <div class="mdl-card__supporting-text padding-top">
+                        <span>{{ server.member_set.count }} members</span><br>
+                        <span>XXXX confirmed members</span>
+                    </div>
+                    <div class="mdl-card__supporting-text no-left-padding">
+                        <a href="{% url 'members:list' %}?server={{ server.id }}" class="mdl-button mdl-button--raised">Show List</a>
+                    </div>
                 </div>
-                <div class="panel-body">
-                    <table class="table">
+            </div>
+            <!-- Server administration -->
+            <div class="mdl-grid mdl-cell mdl-cell--4-col mdl-card mdl-shadow--4dp">
+                <h2 class="mdl-card__title-text">Settings</h2>
+                <div class="mdl-card__supporting-text no-left-padding">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="text" name="type" id="type" value="channel" hidden>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input" type="text" name="admin" value="{{ server.channel_admin }}">
+                            <label class="mdl-textfield__label">Admin channel</label>
+                        </div>
+                        <br>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input" type="text" name="logs" value="{{ server.channel_logs }}">
+                            <label class="mdl-textfield__label">Logs channel</label>
+                        </div>
+                        <br>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input" type="text" name="request" value="{{ server.channel_request }}">
+                            <label class="mdl-textfield__label">Request channel</label>
+                        </div>
+                        <br>
+                        <div>
+                            {% if user.is_superuser or user in server.admins %}
+                                <button type="submit" class="mdl-button"> UPDATE </button>
+                            {% else %}
+                                <button type="submit" class="mdl-button" disabled> UPDATE </button>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% if server.admins.all %}
+                <div class="mdl-grid mdl-cell mdl-cell--4-col mdl-card mdl-shadow--4dp">
+                    <table class="mdl-data-table mdl-js-data-table" style="width: 100%;">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                {% if perms.groups.delete_ban %}
-                                <th>Unban</th>
+                                <th class="mdl-data-table__cell--non-numeric">Administrators</th>
+                                {% if user.is_superuser %}
+                                    <th>Delete</th>
                                 {% endif %}
                             </tr>
                         </thead>
                         <tbody>
-                            {% for user in bans.users %}
+                            {% for admin in server.admins.all %}
                                 <tr>
-                                    <td> {{ user.value }}   </td>
-                                    {% if perms.groups.delete_ban %}
-                                    <td><a href="{% url 'groups:deleteban' user.pk %}" class="btn btn-primary" role="button">Unban</a></td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ admin }}</td>
+                                    {% if user.is_superuser %}
+                                        <td>
+                                            <a href="{% url 'servers:deladmin' server.pk admin.pk %}">
+                                                <i class="material-icons mdl-list__item-icon">delete</i>
+                                            </a>
+                                        </td>
                                     {% endif %}
-                                <tr>
+                                </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Banned groups</h4>
-                    {% if perms.groups.add_ban %}
-                    <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#banModal" data-bantype="group">
-                        New
-                    </button>
-                    {% endif %}
-                    <div class="clearfix"></div>
-                </div>
-                <div class="panel-body">
-                    <table class="table">
+            {% endif %}
+            {% if server.moderators.all %}
+                <div class="mdl-grid mdl-cell mdl-cell--4-col mdl-card mdl-shadow--4dp">
+                    <table class="mdl-data-table mdl-js-data-table" style="width: 100%;">
                         <thead>
                             <tr>
-                                <th>Group</th>
-                                {% if perms.groups.delete_ban %}
-                                <th>Unban</th>
+                                <th class="mdl-data-table__cell--non-numeric">Moderators</th>
+                                {% if user.is_superuser or user in server.admins %}
+                                    <th>Delete</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mod in server.moderators.all %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ mod }}</td>
+                                    {% if user.is_superuser or user in server.admins %}
+                                        <td>
+                                            <a href="{% url 'servers:delmod' server.pk mod.pk %}">
+                                                <i class="material-icons mdl-list__item-icon">delete</i>
+                                            </a>
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+            <!-- /Server administration -->
+            <!-- Bans -->
+            {% if bans.users %}
+                <div class="mdl-grid mdl-cell mdl-cell--4-col mdl-card mdl-shadow--4dp">
+                    <table class="mdl-data-table mdl-js-data-table" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Banned users</th>
+                                {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                    <th>Delete</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for member in bans.users %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ member.value }}</td>
+                                    {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                        <td>
+                                            <a href="{% url 'groups:deleteban' member.pk %}">
+                                                <i class="material-icons mdl-list__item-icon">delete</i>
+                                            </a>
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+            {% if bans.groups %}
+                <div class="mdl-grid mdl-cell mdl-cell--4-col mdl-card mdl-shadow--4dp">
+                    <table class="mdl-data-table mdl-js-data-table" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Banned groups</th>
+                                {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                    <th>Delete</th>
                                 {% endif %}
                             </tr>
                         </thead>
                         <tbody>
                             {% for group in bans.groups %}
                                 <tr>
-                                    <td> {{ group.value }} </td>
-                                    {% if perms.groups.delete_ban %}
-                                    <td><a href="{% url 'groups:deleteban' group.pk %}" class="btn btn-primary" role="button">Unban</a></td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ group.value }}</td>
+                                    {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                        <td>
+                                            <a href="{% url 'groups:deleteban' group.pk %}">
+                                                <i class="material-icons mdl-list__item-icon">delete</i>
+                                            </a>
+                                        </td>
                                     {% endif %}
-                                <tr>
+                                </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Banned logins</h4>
-                    {% if perms.groups.add_ban %}
-                    <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#banModal" data-bantype="login">
-                        New
-                    </button>
-                    {% endif %}
-                    <div class="clearfix"></div>
-                </div>
-                <div class="panel-body">
-                    <table class="table">
+            {% endif %}
+            {% if bans.emails %}
+                <div class="mdl-grid mdl-cell mdl-cell--4-col mdl-card mdl-shadow--4dp">
+                    <table class="mdl-data-table mdl-js-data-table" style="width: 100%;">
                         <thead>
                             <tr>
-                                <th>Login</th>
-                                {% if perms.groups.delete_ban %}
-                                <th>Unban</th>
+                                <th class="mdl-data-table__cell--non-numeric">Banned emails</th>
+                                {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                    <th>Delete</th>
                                 {% endif %}
                             </tr>
                         </thead>
                         <tbody>
-                            {% for login in bans.logins %}
+                            {% for email in bans.emails %}
                                 <tr>
-                                    <td> {{ login.value }} </td>
-                                    {% if perms.groups.delete_ban %}
-                                    <td><a href="{% url 'groups:deleteban' login.pk %}" class="btn btn-primary" role="button">Unban</a></td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ email.value }}</td>
+                                    {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                        <td>
+                                            <a href="{% url 'groups:deleteban' email.pk %}">
+                                                <i class="material-icons mdl-list__item-icon">delete</i>
+                                            </a>
+                                        </td>
                                     {% endif %}
-                                <tr>
+                                </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
-            </div>
+            {% endif %}
+            <!-- /Bans -->
+            <!-- Server domains whitelist -->
+            {% if server.emails_domains.all %}
+                <div class="mdl-grid mdl-cell mdl-cell--4-col mdl-card mdl-shadow--4dp">
+                    <table class="mdl-data-table mdl-js-data-table" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Domain</th>
+                                {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                    <th>Delete</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for domain in server.emails_domains.all %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ domain.domain }}</td>
+                                    {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                        <td>
+                                            <a href="{% url 'servers:deldomain' server.pk domain.pk %}">
+                                                <i class="material-icons mdl-list__item-icon">delete</i>
+                                            </a>
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+            <!-- /Server domains whitelist -->
+            <!-- Server grades -->
+            {% if ranks.confirmed %}
+                <div class="mdl-grid mdl-cell mdl-cell--4-col mdl-card mdl-shadow--4dp">
+                    <table class="mdl-data-table mdl-js-data-table" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Confirmed ranks</th>
+                                {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                    <th>Delete</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rank in ranks.confirmed %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ rank.discord_id }}</td>
+                                    {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                        <td>
+                                            <a href="{% url 'servers:deleterank' rank.pk %}">
+                                                <i class="material-icons mdl-list__item-icon">delete</i>
+                                            </a>
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+            {% if ranks.banned %}
+                <div class="mdl-grid mdl-cell mdl-cell--4-col mdl-card mdl-shadow--4dp">
+                    <table class="mdl-data-table mdl-js-data-table" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Banned ranks</th>
+                                {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                    <th>Delete</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rank in ranks.banned %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ rank.discord_id }}</td>
+                                    {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                        <td>
+                                            <a href="{% url 'servers:deleterank' rank.pk %}">
+                                                <i class="material-icons mdl-list__item-icon">delete</i>
+                                            </a>
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+            {% if ranks.classic %}
+                <div class="mdl-grid mdl-cell mdl-cell--6-col mdl-card mdl-shadow--4dp">
+                    <table class="mdl-data-table mdl-js-data-table" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">User group</th>
+                                <th class="mdl-data-table__cell--non-numeric">Discord rank</th>
+                                {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                    <th>Delete</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rank in ranks.classic %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ rank.name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{ rank.discord_id }}</td>
+                                    {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                        <td>
+                                            <a href="{% url 'servers:deleterank' rank.pk %}">
+                                                <i class="material-icons mdl-list__item-icon">delete</i>
+                                            </a>
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+            <!-- /Server grades -->
         </div>
-    </div>
+    </main>
+
+    {% if user.is_superuser or user in server.admins or user in server.moderators %}
+        <button id="add_button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored">
+            <i class="material-icons">add</i>
+        </button>
+
+        <ul class="mdl-menu mdl-js-menu mdl-menu--top-right" for="add_button">
+            <li class="mdl-menu__item show-modal" data-modal="#modal_bans">Bans</li>
+            <li class="mdl-menu__item show-modal" data-modal="#modal_group">Ranks</li>
+            <li class="mdl-menu__item show-modal" data-modal="#modal_form" data-title="Add domain" data-type="domain">Domain</li>
+            {% if user.is_superuser or user in server.admins %}
+                <li class="mdl-menu__item show-modal" data-modal="#modal_moderation">Moderation</li>
+            {% endif %}
+        </ul>
+
+        <dialog class="mdl-dialog" id="modal_bans">
+            <div class="mdl-dialog__content">
+                <h5> Which type of ban ? </h5>
+            </div>
+            <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+                <button type="button" class="mdl-button show-modal" data-modal="#modal_form" data-title="Banning user" data-type="ban-user">User</button>
+                <button type="button" class="mdl-button show-modal" data-modal="#modal_form" data-title="Banning group" data-type="ban-group">Group</button>
+                <button type="button" class="mdl-button show-modal" data-modal="#modal_form" data-title="Banning email" data-type="ban-email">Email</button>
+                <button type="button" class="mdl-button close">Close</button>
+            </div>
+        </dialog>
+
+        <dialog class="mdl-dialog" id="modal_group">
+            <div class="mdl-dialog__content">
+                <h5> Which type of group ? </h5>
+            </div>
+            <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+                <button type="button" class="mdl-button show-modal" data-modal="#modal_form" data-title="Adding rank for confirmed" data-type="role-confirmed">Confirmed</button>
+                <button type="button" class="mdl-button show-modal" data-modal="#modal_form" data-title="Adding rank for banned" data-type="role-banned">Banned</button>
+                <button type="button" class="mdl-button show-modal" data-modal="#modal_form" data-title="Adding rank for group" data-type="role-classic" data-rank="">Specific</button>
+                <button type="button" class="mdl-button close">Close</button>
+            </div>
+        </dialog>
+
+        {% if user.is_superuser or user in server.admins %}
+            <dialog class="mdl-dialog" id="modal_moderation">
+                <div class="mdl-dialog__content">
+                    <h5> What do you want to add ? </h5>
+                </div>
+                <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+                    <button type="button" class="mdl-button show-modal" data-modal="#modal_form" data-title="Adding moderator" data-type="serv-mod">Moderator</button>
+                    {% if user.is_superuser %}
+                        <button type="button" class="mdl-button show-modal" data-modal="#modal_form" data-title="Adding administrator" data-type="serv-admin">Administrator</button>
+                    {% endif %}
+                    <button type="button" class="mdl-button close">Close</button>
+                </div>
+            </dialog>
+        {% endif %}
+
+        <dialog class="mdl-dialog" id="modal_form">
+            <div class="mdl-dialog__content">
+                <h5 id="form_title">  </h5>
+                <form id="form_action" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="type" id="type" value="" hidden>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" id="rank" name="rank">
+                        <label class="mdl-textfield__label" for="rank">Role</label>
+                    </div>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" id="value" name="value">
+                        <label class="mdl-textfield__label" for="value">Discord id</label>
+                    </div>
+                </form>
+            </div>
+            <div class="mdl-dialog__actions">
+                <button type="submit" class="mdl-button" form="form_action">Send</button>
+                <button type="button" class="mdl-button close">Close</button>
+            </div>
+        </dialog>
     {% endif %}
-
-{% if perms.groups.add_ban %}
-<div class="modal fade" id="banModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="exampleModalLabel"></h4>
-      </div>
-      <div class="modal-body">
-        <form id="banForm" action="ban" method="post">
-            <input type="hidden" id="type" name="type">
-            {% csrf_token %}
-            <label for="message-text" class="control-label">Value:</label>
-            <input type="text" class="form-control" name="value"></input>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Go Back</button>
-        <button type="submit" class="btn btn-primary" form="banForm">Ban</button>
-      </div>
-    </div>
-  </div>
-</div>
-{% endif %}
-
 {% endblock %}
 
 {% block javascriptend %}
-    <script>
-        $('#banModal').on('show.bs.modal', function (event) {
-          var button = $(event.relatedTarget) // Button that triggered the modal
-          var recipient = button.data('bantype') // Extract info from data-* attributes
+    {% if user.is_superuser or user in server.admins or user in server.moderators %}
+        <script>
+            var dialogs = document.querySelectorAll('dialog');
+            var buttons = document.querySelectorAll('.show-modal');
+            dialogs.forEach(function (dialog) {
+                if (! dialog.showModal) {
+                    dialogPolyfill.registerDialog(dialog);
+                }
+            });
+            buttons.forEach(function(button) {
+                var dialog_name = button.dataset['modal'];
+                if (!dialog_name) return;
 
-          // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-          var modal = $(this)
-          modal.find('.modal-title').text('Banning new ' + recipient)
-          modal.find('.modal-body input#type').val(recipient)
-        })
-    </script>
+                var dialog = document.querySelector(dialog_name);
+                button.addEventListener('click', function() {
+                    if (dialog.id == "modal_form") {
+                        dialog.querySelector('#form_title').innerHTML = button.dataset['title'];
+                        dialog.querySelector('#type').value = button.dataset['type'];
+
+                        var rankDiv = dialog.querySelector('#rank').parentElement;
+                        if ('rank' in button.dataset) {
+                            rankDiv.removeAttribute("hidden");
+                        } else {
+                            rankDiv.setAttribute("hidden", true);
+                        }
+                    }
+                    dialog.showModal();
+                });
+                dialog.querySelector('.close').addEventListener('click', function() {
+                    if (dialog.id == "modal_form") {
+                        dialog.querySelector('#type').value = "";
+                        dialog.querySelector('#value').value = "";
+                        dialog.querySelector('#rank').value = "";
+                    }
+                    dialog.close();
+                });
+            });
+            {% if user.is_superuser %}
+                document.querySelector('#switch_activate').addEventListener('change', (event) => {
+                    if (event.target.checked) {
+                        if (confirm('Activate server ?')) {
+                            document.location = "activate/";
+                        } else {
+                            event.target.checked = false;
+                        }
+                    } else {
+                        if (confirm('Deactivate server ?')) {
+                            document.location = "deactivate/";
+                        } else {
+                            event.target.checked = true;
+                        }
+                    }
+                });
+            {% endif %}
+        </script>
+    {% endif %}
 {% endblock %}

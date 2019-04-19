@@ -6,7 +6,6 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.http import HttpResponse
-import json
 
 from website.apps.servers.models import Server
 from website.apps.members.models import Member
@@ -14,37 +13,41 @@ from website.apps.groups.models  import Group, Ban, Update
 
 class deleteban(View):
     @method_decorator(login_required)
-    @method_decorator(permission_required('groups.delete_ban'))
+    @method_decorator(staff_member_required)
     def get(self, request, pk):
         ban = get_object_or_404(Ban, pk=pk)
+        server = ban.server
 
-        server_id = ban.server.server_id
+        if not request.user.is_superuser and not request.user in server.moderators.all() and not request.user in server.admins.all():
+            raise Http404('Not found')
 
         Update(
-            server=ban.server,
-            type='unban',
-            ban_type=ban.type,
-            value=ban.value
+            server   = server,
+            type     = 'unban',
+            ban_type = ban.type,
+            value    = ban.value,
+            author   = int(request.user.social_auth.get(provider='discord').uid),
         ).save()
 
         ban.delete()
 
-        return redirect('servers:info', server_id=server_id)
+        return redirect('servers:info', pk=server.pk)
 
 class deletegroup(View):
     @method_decorator(login_required)
-    @method_decorator(permission_required('groups.delete_group'))
+    @method_decorator(staff_member_required)
     def get(self, request, pk):
         group = get_object_or_404(Group, pk=pk)
 
-        login = group.login
+        email = group.email
 
-        member = get_object_or_404(Member, login=login)
+        member = get_object_or_404(Member, email=email)
 
         Update(
-            type='delgroup',
-            login=group.login,
-            value=group.group,
+            type    = 'delgroup',
+            email   = group.email,
+            value   = group.group,
+            author  = int(request.user.social_auth.get(provider='discord').uid),
         ).save()
 
         group.delete()

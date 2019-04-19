@@ -5,8 +5,8 @@ from website.apps.members.models import Member
 class MemberAdmin(admin.ModelAdmin):
     list_display = (
         'id',
-        'username',
-        'login'
+        'hash',
+        'email'
     )
 
 admin.site.register(Member, MemberAdmin)

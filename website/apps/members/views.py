@@ -13,43 +13,96 @@ from website.apps.members.models import Member
 from website.apps.servers.models import Server
 from website.apps.groups.models  import Group, Ban, Update
 
+class list(View):
+    @method_decorator(login_required)
+    @method_decorator(staff_member_required)
+    def get(self, request):
+        if 'server' in request.GET and request.GET['server']:
+            server = get_object_or_404(Server, pk=request.GET['server'])
+            members = server.member_set
+        else:
+            server = None
+            members = Member.objects
+
+        if 'name' in request.GET and request.GET['name']:
+            members = members.filter(name__icontains=request.GET['name'])
+        if 'id' in request.GET and request.GET['id']:
+            members = members.filter(id__icontains=request.GET['id'])
+        if 'email' in request.GET and request.GET['email']:
+            members = members.filter(email__icontains=request.GET['email'])
+
+        context = {
+            'members': members.all(),
+            'server': server,
+        }
+
+        return render(request, 'members/list.html', context)
+
 class profile(View):
     @method_decorator(login_required)
     @method_decorator(staff_member_required)
     def get(self, request, id):
         member  = get_object_or_404(Member, id=id)
-        servers = Server.objects.filter(members__in=[member])
 
         context = {
-            'user': request.user,
-            'user_extra': request.user.social_auth.get(provider="discord").extra_data,
-            'profile': member,
-            'servers': servers,
-            'groups': Group.objects.filter(login=member.login),
+            'member': member,
+            'member_groups': Group.objects.filter(email=member.email),
         }
 
-        return render(request, "users/profile.html", context)
+        if member.email:
+            context['groups'] = Group.objects.filter(email=member.email)
+
+        return render(request, "members/profile.html", context)
+
+    @method_decorator(login_required)
+    @method_decorator(staff_member_required)
+    def post(self, request, id):
+        member = get_object_or_404(Member, id=id)
+        member.email = request.POST.get('email', '')
+        member.save()
+
+        Update(
+            type     = 'certify',
+            email    = member.email,
+            value    = member.id,
+            author   = int(request.user.social_auth.get(provider='discord').uid),
+        ).save()
+
+        return redirect('members:profile', id=member.id)
 
 class addgroup(View):
     @method_decorator(login_required)
-    @method_decorator(permission_required('groups.add_group'))
+    @method_decorator(staff_member_required)
     def post(self, request, id):
         member = get_object_or_404(Member, id=id)
 
-        if member.login == '':
-            return HttpResponseNotFound('User does not get a login')
+        if member.email == '':
+            return HttpResponseNotFound('User does not get an email')
 
         data = request.POST
 
         Group(
-            login=member.login,
-            group=data['value'],
+            email=member.email,
+            group=data['group'],
         ).save()
 
         Update(
             type     = 'addgroup',
-            login    = member.login,
-            value    = data['value']
+            email    = member.email,
+            value    = data['group'],
+            author   = int(request.user.social_auth.get(provider='discord').uid),
         ).save()
 
         return redirect('members:profile', id=id)
+
+class delete(View):
+    @method_decorator(login_required)
+    @method_decorator(staff_member_required)
+    def get(self, request, id):
+        member = get_object_or_404(Member, id=id)
+
+        member.delete()
+
+        # TODO
+
+        return redirect('members:list')

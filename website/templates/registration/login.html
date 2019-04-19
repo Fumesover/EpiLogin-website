@@ -1,5 +1,5 @@
 {% load static %}
-
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -16,7 +16,15 @@
     <div class="center-div">
         <div class="epilogin-logo"></div>
 
-        <div class="cgu row">
+        {% if request.GET.error %}
+            <div class="errors">
+                <p>
+                    {{ request.GET.error }}
+                </p>
+            </div>
+        {% endif %}
+
+        <div class="cgu">
             <p>
                 <input type="checkbox" onchange="toggleLink(this);">
                 J'ai lu et j'accepte les <a href="/static/CGU.html">CGU</a> et l'utilisation de mes données tel que decrit dans les CGU.

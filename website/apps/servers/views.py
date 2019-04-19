@@ -6,224 +6,164 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse, JsonResponse
-from basicauth.decorators import basic_auth_required
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, Http404
+from social_django.models import UserSocialAuth
+from django.contrib.auth import get_user_model
 import json
 
-from website.apps.servers.models import Server
+from website.apps.servers.models import Server, Rank, EmailDomain
 from website.apps.members.models import Member
 from website.apps.groups.models  import Group, Ban, Update
 
 class info(View):
     @method_decorator(login_required)
     @method_decorator(staff_member_required)
-    def get(self, request, server_id):
-        server = get_object_or_404(Server, server_id=server_id)
+    def get(self, request, pk):
+        server = get_object_or_404(Server, pk=pk)
+
+        if not request.user.is_superuser and not request.user in server.moderators.all() and not request.user in server.admins.all():
+            raise Http404('Not found')
+
         bans = {
-            'users': Ban.objects.filter(server=server, type='user'),
+            'users':  Ban.objects.filter(server=server, type='user'),
             'groups': Ban.objects.filter(server=server, type='group'),
-            'logins': Ban.objects.filter(server=server, type='login'),
+            'emails': Ban.objects.filter(server=server, type='email'),
+        }
+
+        ranks = {
+            'confirmed': Rank.objects.filter(server=server, type='confirmed'),
+            'classic': Rank.objects.filter(server=server, type='classic'),
+            'banned': Rank.objects.filter(server=server, type='banned'),
         }
 
         context = {
-            'user': request.user,
-            'user_extra': request.user.social_auth.get(provider="discord").extra_data,
             'server': server,
             'bans': bans,
+            'ranks': ranks,
         }
 
         return render(request, "servers/info.html", context)
+
+    @method_decorator(login_required)
+    @method_decorator(staff_member_required)
+    def post(self, request, pk):
+        server = get_object_or_404(Server, pk=pk)
+
+        if (not request.user.is_superuser) and (not request.user in server.moderators.all()) and (not request.user in server.admins.all()):
+            raise Http404('Not found')
+
+        type = request.POST.get('type', '').split('-')
+        value = request.POST.get('value', '')
+        rank = request.POST.get('rank', '')
+
+        if type[0] == 'ban':
+            Ban(
+                server = server,
+                type   = type[1],
+                value  = value
+            ).save()
+
+            Update(
+                server   = server,
+                type     = 'ban',
+                ban_type = type[1],
+                value    = value,
+                author   = int(request.user.social_auth.get(provider='discord').uid),
+            ).save()
+        elif type[0] == 'role':
+            Rank(
+                server     = server,
+                type       = type[1],
+                name       = rank,
+                discord_id = value
+            ).save()
+
+            Update(
+                server   = server,
+                type     = 'config',
+                value    = 'addrank-' + type[1],
+                ban_type = rank,
+                email    = value,
+                author   = int(request.user.social_auth.get(provider='discord').uid),
+            ).save()
+        elif type[0] == 'serv':
+            try:
+                user = UserSocialAuth.objects.get(provider='discord', uid=value)
+            except UserSocialAuth.DoesNotExist:
+                return redirect('servers:info', pk=pk)
+
+            if type[1] == 'mod':
+                if request.user.is_superuser or request.user in server.admins.all():
+                    server.moderators.add(user.user)
+                else:
+                    raise Http404('Not found')
+            elif type[1] == 'admin':
+                if request.user.is_superuser:
+                    server.admins.add(user.user)
+                else:
+                    raise Http404('Not found')
+
+            server.save()
+        elif type[0] == 'domain':
+            domain = EmailDomain(domain=value)
+            domain.save()
+
+            server.emails_domains.add(domain)
+            server.save()
+
+            Update(
+                server   = server,
+                type     = 'config',
+                value    = 'adddomain',
+                ban_type = value,
+                author   = int(request.user.social_auth.get(provider='discord').uid),
+            ).save()
+        elif type[0] == 'channel':
+            if not (request.user.is_superuser or request.user in server.admins.all()):
+                raise Http404('Not found')
+
+            server.channel_admin   = request.POST.get('admin', 0)
+            server.channel_logs    = request.POST.get('logs', 0)
+            server.channel_request = request.POST.get('request', 0)
+
+            server.save()
+
+            Update(
+                server   = server,
+                type     = 'config',
+                value    = 'channels',
+                author   = int(request.user.social_auth.get(provider='discord').uid),
+            ).save()
+
+        return redirect('servers:info', pk=pk)
 
 class list(View):
     @method_decorator(login_required)
     @method_decorator(staff_member_required)
     def get(self, request):
+        servers = Server.objects.all()
+
+        if not request.user.is_superuser:
+            for server in servers:
+                if not request.user in server.moderators and not request.user in server.admins:
+                    servers = servers.exclude(pk=server.pk)
+
         context = {
-            'user': request.user,
-            'user_extra': request.user.social_auth.get(provider="discord").extra_data,
-            'servers': Server.objects.all()
+            'servers': servers
         }
 
         return render(request, "servers/list.html", context)
 
-@method_decorator(csrf_exempt, name='dispatch')
-@method_decorator(basic_auth_required, name='dispatch')
-class update(View):
-    def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-
-        for key,value in data['servers'].items():
-            server, created = Server.objects.get_or_create(
-                server_id=key,
-                defaults={'name': value['name']}
-            )
-
-            for ban in value['bans']:
-                ban, created = Ban.objects.get_or_create(
-                    server = server,
-                    type  = ban['type'],
-                    value = ban['data']
-                )
-
-
-        for key,value in data['members'].items():
-            member, created = Member.objects.get_or_create(
-                id=key,
-            )
-
-            member.username = value['name']
-            member.login = value['login']
-            member.save()
-
-            for server_id in value['servers']:
-                server = Server.objects.get(
-                    server_id=server_id
-                )
-
-                server.members.add(member)
-
-        for group in data['groups']:
-            group, created = Group.objects.get_or_create(
-                group=group['group'],
-                login=group['login'],
-            )
-
-        return HttpResponse('')
-
-    def get(self, request):
-        updates = Update.objects.all()
-
-        data = {
-            'unban': [],
-            'ban':   [],
-            'addgroup': [],
-            'delgroup': [],
-            'certify': [],
-        }
-
-        for update in updates:
-            if update.type == 'unban':
-                data['unban'].append({
-                    'pk': update.pk,
-                    'server': update.server.server_id,
-                    'ban_type': update.ban_type,
-                    'value': update.value,
-                })
-            elif update.type == 'ban':
-                data['ban'].append({
-                    'pk': update.pk,
-                    'server': update.server.server_id,
-                    'ban_type': update.ban_type,
-                    'value': update.value,
-                })
-            elif update.type == 'addgroup':
-                data['addgroup'].append({
-                    'pk':    update.pk,
-                    'login': update.login,
-                    'value': update.value,
-                })
-            elif update.type == 'delgroup':
-                data['delgroup'].append({
-                    'pk':    update.pk,
-                    'login': update.login,
-                    'value': update.value,
-                })
-            elif update.type == 'certify':
-                data['certify'].append({
-                    'pk':    update.pk,
-                    'login': update.login,
-                    'value': update.value,
-                })
-            else:
-                print(update.type)
-
-        return JsonResponse(data)
-
-    def delete(self, request):
-        for pk in json.loads(request.body)['pk']:
-            try:
-                Update.objects.get(
-                    pk=pk
-                ).delete()
-            except Exception:
-                pass
-
-        return HttpResponse('')
-
-@method_decorator(csrf_exempt, name='dispatch')
-@method_decorator(basic_auth_required, name='dispatch')
-class push(View):
-    def post(self, request):
-        data = json.loads(request.body)
-
-        if 'addgroup' in data:
-            for addgroup in data['addgroup']:
-                group, created = Group.objects.get_or_create(
-                    login=addgroup['login'],
-                    group=addgroup['group']
-                )
-
-        if 'delgroup' in data:
-            for delgroup in data['delgroup']:
-                groups = Group.objects.filter(
-                    login=delgroup['login'],
-                    group=delgroup['group']
-                )
-
-                for group in groups:
-                    group.delete()
-
-        if 'bans' in data:
-            server = get_object_or_404(Server, server_id=data['bans']['server'])
-            for ban in data['bans']['banned']:
-                ban, created = Ban.objects.get_or_create(
-                    server=server,
-                    type=data['bans']['type'],
-                    value=ban
-                )
-
-        if 'unbans' in data:
-            server = get_object_or_404(Server, server_id=data['unbans']['server'])
-            for ban in data['unbans']['unbanned']:
-                ban = Ban.objects.get(
-                    server=server,
-                    type=data['unbans']['type'],
-                    value=ban
-                )
-                if ban: ban.delete()
-
-        if 'certify' in data:
-            member, created = Member.objects.get_or_create(
-                id=data['certify']['id']
-            )
-            member.login = data['certify']['login']
-            member.save()
-
-        if 'joined' in data:
-            member, created = Member.objects.get_or_create(
-                id=data['joined']['id']
-            )
-
-            member.username = data['joined']['username']
-            member.save()
-
-            s = get_object_or_404(Server, server_id=data['joined']['server'])
-            s.members.add(member)
-
-        if 'leaves' in data:
-            member = get_object_or_404(Member, id=data['leaves']['id'])
-            s = get_object_or_404(Server, server_id=data['leaves']['server'])
-            s.members.remove(member)
-
-        return HttpResponse('')
-
 class ban(View):
     @method_decorator(login_required)
-    @method_decorator(permission_required('groups.add_ban'))
-    def post(self, request, server_id):
-        data = request.POST
+    @method_decorator(staff_member_required)
+    def post(self, request, pk):
+        server = get_object_or_404(Server, pk=pk)
 
-        server = Server.objects.get(server_id=server_id)
+        if not request.user.is_superuser and not request.user in server.moderators.all() and not request.user in server.admins.all():
+            raise Http404('Not found')
+
+        data = request.POST
 
         Ban(
             server = server,
@@ -235,7 +175,132 @@ class ban(View):
             server   = server,
             type     = 'ban',
             ban_type = data['type'],
-            value    = data['value']
+            value    = data['value'],
+            author   = int(request.user.social_auth.get(provider='discord').uid),
         ).save()
 
-        return redirect('servers:info', server_id=server_id)
+        return redirect('servers:info', pk=pk)
+
+class deleterank(View):
+    @method_decorator(login_required)
+    @method_decorator(staff_member_required)
+    def get(self, request, pk):
+        rank = get_object_or_404(Rank, pk=pk)
+
+        server = rank.server
+
+        if not request.user.is_superuser and not request.user in server.moderators.all() and not request.user in server.admins.all():
+            raise Http404('Not found')
+
+        Update(
+            server   = server,
+            type     = 'config',
+            value    = 'delrank-' + rank.type,
+            ban_type = rank.name,
+            email    = rank.discord_id,
+            author   = int(request.user.social_auth.get(provider='discord').uid),
+        ).save()
+
+        rank.delete()
+
+        return redirect('servers:info', pk=server.id)
+
+class deladmin(View):
+    @method_decorator(login_required)
+    @method_decorator(staff_member_required)
+    def get(self, request, pk, user):
+        if not request.user.is_superuser:
+            raise Http404('Not found')
+
+        server = get_object_or_404(Server, pk=pk)
+
+        try:
+            user = get_user_model().objects.get(pk=user)
+        except get_user_model().DoesNotExist:
+            return redirect('servers:info', pk=pk)
+
+        server.admins.remove(user)
+        server.save()
+
+        return redirect('servers:info', pk=pk)
+
+class delmod(View):
+    @method_decorator(login_required)
+    @method_decorator(staff_member_required)
+    def get(self, request, pk, user):
+        server = get_object_or_404(Server, pk=pk)
+
+        if not request.user.is_superuser and not request.user in server.admins.all():
+            raise Http404('Not found')
+
+        try:
+            user = get_user_model().objects.get(pk=user)
+        except get_user_model().DoesNotExist:
+            return redirect('servers:info', pk=pk)
+
+        server.moderators.remove(user)
+        server.save()
+
+        return redirect('servers:info', pk=pk)
+
+class deldomain(View):
+    @method_decorator(login_required)
+    @method_decorator(staff_member_required)
+    def get(self, request, pk, dpk):
+        domain = get_object_or_404(EmailDomain, pk=dpk)
+        server = get_object_or_404(Server, pk=pk)
+
+        if not request.user.is_superuser and not request.user in server.admins.all():
+            raise Http404('Not found')
+
+        Update(
+            server   = server,
+            type     = 'config',
+            email    = domain.domain,
+            value    = 'deldomain',
+            author   = int(request.user.social_auth.get(provider='discord').uid),
+        ).save()
+
+        domain.delete()
+
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+class activate(View):
+    @method_decorator(login_required)
+    @method_decorator(staff_member_required)
+    def get(self, request, pk):
+        if not request.user.is_superuser:
+            raise Http404('Nope')
+
+        server = get_object_or_404(Server, pk=pk)
+        server.is_active = True
+        server.save()
+
+        Update(
+            server   = server,
+            type     = 'config',
+            value    = 'activate',
+            author   = int(request.user.social_auth.get(provider='discord').uid),
+        ).save()
+
+        return redirect('servers:info', pk=pk)
+
+class deactivate(View):
+    @method_decorator(login_required)
+    @method_decorator(staff_member_required)
+    def get(self, request, pk):
+        if not request.user.is_superuser:
+            raise Http404('Nope')
+
+        server = get_object_or_404(Server, pk=pk)
+        server.is_active = False
+        server.save()
+
+        Update(
+            server   = server,
+            type     = 'config',
+            value    = 'deactivate',
+            author   = int(request.user.social_auth.get(provider='discord').uid),
+        ).save()
+
+        return redirect('servers:info', pk=pk)

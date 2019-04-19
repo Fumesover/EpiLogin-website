@@ -8,6 +8,8 @@ from website.apps.users import views as users_views
 admin.autodiscover()
 
 urlpatterns = [
+    url(r'^api/', include('website.apps.api.urls', namespace='api')),
+
     url(r'^admin/', admin.site.urls),
     url(r'^auth/', include('social_django.urls', namespace='social')),
     url(r'^login/$', auth_views.LoginView.as_view(), name='login'),
