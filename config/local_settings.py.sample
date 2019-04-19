@@ -17,7 +17,3 @@ SOCIAL_AUTH_DISCORD_SECRET = ""
 
 SOCIAL_AUTH_MICROSOFT_KEY = ""
 SOCIAL_AUTH_MICROSOFT_SECRET = ""
-
-BASICAUTH_USERS = {         # Used by the bot
-    'username': 'password',
-}
