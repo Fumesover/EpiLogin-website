@@ -145,7 +145,7 @@ class list(View):
 
         if not request.user.is_superuser:
             for server in servers:
-                if not request.user in server.moderators and not request.user in server.admins:
+                if not request.user in server.moderators.all() and not request.user in server.admins.all():
                     servers = servers.exclude(pk=server.pk)
 
         context = {
