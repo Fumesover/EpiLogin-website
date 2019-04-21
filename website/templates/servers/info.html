@@ -341,7 +341,7 @@
         </div>
     </main>
 
-    {% if user.is_superuser or user in server.admins or user in server.moderators %}
+    {% if user.is_superuser or user in server.admins.all or user in server.moderators.all %}
         <button id="add_button" class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored">
             <i class="material-icons">add</i>
         </button>
@@ -350,7 +350,7 @@
             <li class="mdl-menu__item show-modal" data-modal="#modal_bans">Bans</li>
             <li class="mdl-menu__item show-modal" data-modal="#modal_group">Ranks</li>
             <li class="mdl-menu__item show-modal" data-modal="#modal_form" data-title="Add domain" data-type="domain">Domain</li>
-            {% if user.is_superuser or user in server.admins %}
+            {% if user.is_superuser or user in server.admins.all %}
                 <li class="mdl-menu__item show-modal" data-modal="#modal_moderation">Moderation</li>
             {% endif %}
         </ul>
@@ -379,7 +379,7 @@
             </div>
         </dialog>
 
-        {% if user.is_superuser or user in server.admins %}
+        {% if user.is_superuser or user in server.admins.all %}
             <dialog class="mdl-dialog" id="modal_moderation">
                 <div class="mdl-dialog__content">
                     <h5> What do you want to add ? </h5>
@@ -419,7 +419,7 @@
 {% endblock %}
 
 {% block javascriptend %}
-    {% if user.is_superuser or user in server.admins or user in server.moderators %}
+    {% if user.is_superuser or user in server.admins.all or user in server.moderators.all %}
         <script>
             var dialogs = document.querySelectorAll('dialog');
             var buttons = document.querySelectorAll('.show-modal');

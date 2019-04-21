@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from django_filters import rest_framework as filters
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 
 from .serializers import *
@@ -13,7 +13,7 @@ from website.apps.members.models import Member
 from website.apps.servers.models import Server, Rank
 
 class UpdateViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminUser,)
     authentication_classes = (TokenAuthentication, SessionAuthentication)
 
     queryset = Update.objects.all()
@@ -22,7 +22,7 @@ class UpdateViewSet(viewsets.ModelViewSet):
     filterset_fields = ('type', 'ban_type', 'server', 'email')
 
 class GroupViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminUser,)
     authentication_classes = (TokenAuthentication, SessionAuthentication)
 
     queryset = Group.objects.all()
@@ -31,21 +31,21 @@ class GroupViewSet(viewsets.ModelViewSet):
     filterset_fields = ('email', 'group')
 
 class RankViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminUser,)
     authentication_classes = (TokenAuthentication, SessionAuthentication)
 
     queryset = Rank.objects.all()
     serializer_class = RankSerializer
 
 class ServerViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminUser,)
     authentication_classes = (TokenAuthentication, SessionAuthentication)
 
     queryset = Server.objects.all()
     serializer_class = ServerSerializer
 
 class MemberViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminUser,)
     authentication_classes = (TokenAuthentication, SessionAuthentication)
 
     queryset = Member.objects.all()
@@ -66,7 +66,7 @@ class MemberViewSet(viewsets.ModelViewSet):
 #        else:
 #            return Response({'status': 'Invalid request'}, status=400)
 
-    @action(detail=True, methods=['post', 'delete'], permission_classes=(IsAuthenticated,))
+    @action(detail=True, methods=['post', 'delete'], permission_classes=(IsAdminUser,))
     def server(self, request, pk=None):
         member = get_object_or_404(Member, pk=pk)
 
