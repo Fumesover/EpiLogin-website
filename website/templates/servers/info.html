@@ -68,7 +68,7 @@
                         </div>
                         <br>
                         <div>
-                            {% if user.is_superuser or user in server.admins %}
+                            {% if user.is_superuser or user in server.admins.all %}
                                 <button type="submit" class="mdl-button"> UPDATE </button>
                             {% else %}
                                 <button type="submit" class="mdl-button" disabled> UPDATE </button>
@@ -111,7 +111,7 @@
                         <thead>
                             <tr>
                                 <th class="mdl-data-table__cell--non-numeric">Moderators</th>
-                                {% if user.is_superuser or user in server.admins %}
+                                {% if user.is_superuser or user in server.admins.all %}
                                     <th>Delete</th>
                                 {% endif %}
                             </tr>
@@ -120,7 +120,7 @@
                             {% for mod in server.moderators.all %}
                                 <tr>
                                     <td class="mdl-data-table__cell--non-numeric">{{ mod }}</td>
-                                    {% if user.is_superuser or user in server.admins %}
+                                    {% if user.is_superuser or user in server.admins.all %}
                                         <td>
                                             <a href="{% url 'servers:delmod' server.pk mod.pk %}">
                                                 <i class="material-icons mdl-list__item-icon">delete</i>
@@ -141,7 +141,7 @@
                         <thead>
                             <tr>
                                 <th class="mdl-data-table__cell--non-numeric">Banned users</th>
-                                {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                {% if user.is_superuser or user in server.admins.all or user in server.moderators.all %}
                                     <th>Delete</th>
                                 {% endif %}
                             </tr>
@@ -150,7 +150,7 @@
                             {% for member in bans.users %}
                                 <tr>
                                     <td class="mdl-data-table__cell--non-numeric">{{ member.value }}</td>
-                                    {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                    {% if user.is_superuser or user in server.admins.all or user in server.moderators.all %}
                                         <td>
                                             <a href="{% url 'groups:deleteban' member.pk %}">
                                                 <i class="material-icons mdl-list__item-icon">delete</i>
@@ -169,7 +169,7 @@
                         <thead>
                             <tr>
                                 <th class="mdl-data-table__cell--non-numeric">Banned groups</th>
-                                {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                {% if user.is_superuser or user in server.admins.all or user in server.moderators.all %}
                                     <th>Delete</th>
                                 {% endif %}
                             </tr>
@@ -178,7 +178,7 @@
                             {% for group in bans.groups %}
                                 <tr>
                                     <td class="mdl-data-table__cell--non-numeric">{{ group.value }}</td>
-                                    {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                    {% if user.is_superuser or user in server.admins.all or user in server.moderators.all %}
                                         <td>
                                             <a href="{% url 'groups:deleteban' group.pk %}">
                                                 <i class="material-icons mdl-list__item-icon">delete</i>
@@ -197,7 +197,7 @@
                         <thead>
                             <tr>
                                 <th class="mdl-data-table__cell--non-numeric">Banned emails</th>
-                                {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                {% if user.is_superuser or user in server.admins.all or user in server.moderators.all %}
                                     <th>Delete</th>
                                 {% endif %}
                             </tr>
@@ -206,7 +206,7 @@
                             {% for email in bans.emails %}
                                 <tr>
                                     <td class="mdl-data-table__cell--non-numeric">{{ email.value }}</td>
-                                    {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                    {% if user.is_superuser or user in server.admins.all or user in server.moderators.all %}
                                         <td>
                                             <a href="{% url 'groups:deleteban' email.pk %}">
                                                 <i class="material-icons mdl-list__item-icon">delete</i>
@@ -227,7 +227,7 @@
                         <thead>
                             <tr>
                                 <th class="mdl-data-table__cell--non-numeric">Domain</th>
-                                {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                {% if user.is_superuser or user in server.admins.all or user in server.moderators.all %}
                                     <th>Delete</th>
                                 {% endif %}
                             </tr>
@@ -236,7 +236,7 @@
                             {% for domain in server.emails_domains.all %}
                                 <tr>
                                     <td class="mdl-data-table__cell--non-numeric">{{ domain.domain }}</td>
-                                    {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                    {% if user.is_superuser or user in server.admins.all or user in server.moderators.all %}
                                         <td>
                                             <a href="{% url 'servers:deldomain' server.pk domain.pk %}">
                                                 <i class="material-icons mdl-list__item-icon">delete</i>
@@ -257,7 +257,7 @@
                         <thead>
                             <tr>
                                 <th class="mdl-data-table__cell--non-numeric">Confirmed ranks</th>
-                                {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                {% if user.is_superuser or user in server.admins.all or user in server.moderators.all %}
                                     <th>Delete</th>
                                 {% endif %}
                             </tr>
@@ -266,7 +266,7 @@
                             {% for rank in ranks.confirmed %}
                                 <tr>
                                     <td class="mdl-data-table__cell--non-numeric">{{ rank.discord_id }}</td>
-                                    {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                    {% if user.is_superuser or user in server.admins.all or user in server.moderators.all %}
                                         <td>
                                             <a href="{% url 'servers:deleterank' rank.pk %}">
                                                 <i class="material-icons mdl-list__item-icon">delete</i>
@@ -285,7 +285,7 @@
                         <thead>
                             <tr>
                                 <th class="mdl-data-table__cell--non-numeric">Banned ranks</th>
-                                {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                {% if user.is_superuser or user in server.admins.all or user in server.moderators.all %}
                                     <th>Delete</th>
                                 {% endif %}
                             </tr>
@@ -294,7 +294,7 @@
                             {% for rank in ranks.banned %}
                                 <tr>
                                     <td class="mdl-data-table__cell--non-numeric">{{ rank.discord_id }}</td>
-                                    {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                    {% if user.is_superuser or user in server.admins.all or user in server.moderators.all %}
                                         <td>
                                             <a href="{% url 'servers:deleterank' rank.pk %}">
                                                 <i class="material-icons mdl-list__item-icon">delete</i>
@@ -314,7 +314,7 @@
                             <tr>
                                 <th class="mdl-data-table__cell--non-numeric">User group</th>
                                 <th class="mdl-data-table__cell--non-numeric">Discord rank</th>
-                                {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                {% if user.is_superuser or user in server.admins.all or user in server.moderators.all %}
                                     <th>Delete</th>
                                 {% endif %}
                             </tr>
@@ -324,7 +324,7 @@
                                 <tr>
                                     <td class="mdl-data-table__cell--non-numeric">{{ rank.name }}</td>
                                     <td class="mdl-data-table__cell--non-numeric">{{ rank.discord_id }}</td>
-                                    {% if user.is_superuser or user in server.admins or user in server.moderators %}
+                                    {% if user.is_superuser or user in server.admins.all or user in server.moderators.all %}
                                         <td>
                                             <a href="{% url 'servers:deleterank' rank.pk %}">
                                                 <i class="material-icons mdl-list__item-icon">delete</i>
