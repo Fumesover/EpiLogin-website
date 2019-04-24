@@ -33,12 +33,14 @@
                 </div>
             </header>
             <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
-                <a class="mdl-navigation__link" href="{% url 'admin:index' %}">
-                    <i class=" material-icons">
-                        supervisor_account
-                    </i>
-                    Admin
-                </a>
+                {% if user.is_superuser %}
+                    <a class="mdl-navigation__link" href="{% url 'admin:index' %}">
+                        <i class=" material-icons">
+                            supervisor_account
+                        </i>
+                        Admin
+                    </a>
+                {% endif %}
                 <a class="mdl-navigation__link" href="{% url 'users:home' %}">
                     <i class="material-icons">
                         home
