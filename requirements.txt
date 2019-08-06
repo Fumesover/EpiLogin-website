@@ -1,4 +1,4 @@
-django==2.1.5
+django==2.1.11
 psycopg2==2.7.5
 psycopg2-binary==2.7.5
 django-summernote==0.8.8.8
