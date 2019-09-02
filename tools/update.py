@@ -72,7 +72,7 @@ def del_group(email, group, token):
             print('Request failed:', "del_group_update:", email, group, r.status_code)
 
 def main(TOKEN_API, TOKEN_CRI):
-    el_data = fetch_paginate(API_EPILOGIN + "/groups/", TOKEN_API, "Token")
+    el_data = fetch_paginate(API_EPILOGIN + "/groups/?limit=1000", TOKEN_API, "Token")
 
     el_users = {}
     for group in el_data:
@@ -80,16 +80,23 @@ def main(TOKEN_API, TOKEN_CRI):
             el_users[group['email']] = []
         el_users[group['email']].append(group['group'])
 
-    cri_data = fetch_paginate(API_CRI + "/users/", TOKEN_CRI, "Basic")
+    cri_data = fetch_paginate(API_CRI + "/users/?limit=1000", TOKEN_CRI, "Basic")
+
+    # Merge duplicates from cri
+    for i in range(len(cri_data)):
+        if cri_data[i]['mail'] == '':
+            continue
+
+        for j in range(i + 1, len(cri_data)):
+            if cri_data[i]['mail'] == cri_data[j]['mail']:
+                cri_data[i]['class_groups'] += cri_data[j]['class_groups']
+                cri_data[i]['class_groups'].append(cri_data[j]['promo'])
+                cri_data[j]['mail'] = ''
+
 
     for user in cri_data:
         if not user['mail']:
             continue
-
-        if user['mail'] == "paul.hervot@epita.fr":
-            print(user)
-            print(el_users[user['mail']])
-            print(user['class_groups'] + [user['promo']])
 
         if user['mail'] in el_users:
             el_user = el_users[user['mail']]
@@ -107,8 +114,6 @@ def main(TOKEN_API, TOKEN_CRI):
             for rank in user['class_groups'] + [user['promo']]:
                 print("Go add", rank, "for", user['mail'])
                 add_group(user['mail'], rank, TOKEN_API)
-
-    return cri_data
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
