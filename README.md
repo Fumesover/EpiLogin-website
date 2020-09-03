@@ -27,7 +27,7 @@ Load fixtures
 > python3 manage.py loaddata config/fixtures/\*
 
 Run the development server on 127.0.0.1:8000
-> python3 manane.py runserver
+> python3 manage.py runserver
 
 # Tokens
 
