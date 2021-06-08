@@ -6,7 +6,7 @@ social-auth-app-django
 django-crispy-forms==1.7.2
 python-magic==0.4.15
 djangorestframework==3.8.2
-pillow==5.2.0
+pillow==8.2.0
 django-taggit==0.23.0
 python-jose==3.0.1
 django-filter==2.0.0
